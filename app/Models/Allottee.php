@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
-use App\Models\Allottee;
+use App\Models\Lot;
 
-class Lot extends Model
+class Allottee extends Model
 {
     use HasFactory, Notifiable;
 
@@ -29,21 +29,24 @@ class Lot extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'lot_num',
-        'lot_file_num',
-        'lot_description',
-        'lot_area_size',
-        'location_radius',
-        'lot_current_administrator_uuid',
+        'allottee_nric',
+        'allottee_name',
+        'allottee_address',
+        'allottee_phone_num',
+        'allottee_email',
+        'allottee_bank_name',
+        'allottee_bank_acc_num',
+        'allottee_is_dead',
+        'allottee_dead_cert_num',
     ];
 
-    public function allottees()
+    public function lots()
     {
         return $this->belongsToMany(
-            \App\Models\Allottee::class,           // Related model
-            'ownerships',                          // Pivot table
-            'lot_id',                              // Foreign key on pivot table for this model
-            'allottee_id'                          // Foreign key on pivot table for related model
+            \App\Models\Lot::class,
+            'ownerships',
+            'allottee_id',
+            'lot_id'
         )
         ->withPivot('ownership_type', 'ownership_start_date', 'ownership_end_date', 'ownership_remarks')
         ->withTimestamps();
@@ -51,7 +54,7 @@ class Lot extends Model
 
     public function ownerships()
     {
-        return $this->hasMany(\App\Models\Ownership::class, 'lot_id', 'id');
+        return $this->hasMany(\App\Models\Ownership::class, 'allottee_id', 'id');
     }
 
 }

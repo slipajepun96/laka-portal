@@ -5,12 +5,20 @@ export default function DataTable({ columns, data }) {
 
     // Filter data based on search input
     const filteredData = data.filter((row) =>
-        columns.some((column) =>
-            row[column.accessor]
-                ?.toString()
-                .toLowerCase()
-                .includes(search.toLowerCase())
-        )
+        columns.some((column) => {
+            if (Array.isArray(column.accessor)) {
+                // If accessor is an array, check all fields in the array
+                return column.accessor.some((key) =>
+                    row[key]?.toString().toLowerCase().includes(search.toLowerCase())
+                );
+            } else {
+                // Otherwise, check the single accessor field
+                return row[column.accessor]
+                    ?.toString()
+                    .toLowerCase()
+                    .includes(search.toLowerCase());
+            }
+        })
     );
 
     return (
@@ -27,6 +35,10 @@ export default function DataTable({ columns, data }) {
             </div>
 
             {/* Table */}
+            <div className="mt-4 text-sm text-gray-600">
+                Menunjukkan {filteredData.length} daripada {data.length} baris.
+            </div>
+            
             <div className="overflow-x-auto">
                 <table className="min-w-full border-collapse border border-gray-200">
                     <thead>
@@ -70,6 +82,8 @@ export default function DataTable({ columns, data }) {
                     </tbody>
                 </table>
             </div>
+            {/* Row Count Summary */}
+
         </div>
     );
 }

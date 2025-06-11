@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LotController;
+use App\Http\Controllers\AllotteeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,6 +28,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/lots', [LotController::class, 'lotIndex'])->name('lots.index');
     Route::post('/lots/add', [LotController::class, 'lotAdd'])->name('lots.add');
     Route::post('/lots/edit', [LotController::class, 'lotEdit'])->name('lots.edit');
+    Route::post('/lots/file-import', [LotController::class, 'lotImportExcel'])->name('lots.import');
+    Route::post('/lots/add-allottee', [LotController::class, 'lotAddAllottee'])->name('lots.add-allottee');
+
+    Route::get('/allottee', [AllotteeController::class, 'allotteeIndex'])->name('allottee.index');
+    Route::post('/allottee/add', [AllotteeController::class, 'allotteeAdd'])->name('allottee.add');
 });
 
 require __DIR__.'/auth.php';

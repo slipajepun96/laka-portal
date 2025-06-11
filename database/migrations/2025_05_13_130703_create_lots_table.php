@@ -16,6 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('lot_num')->unique();
             $table->string('lot_file_num')->nullable();
+            $table->string('lot_ownership_num')->nullable();
             $table->string('lot_description')->nullable();
             $table->string('lot_area_size')->nullable();
             $table->string('lot_current_administrator_uuid')->nullable();
