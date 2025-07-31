@@ -59,8 +59,8 @@ export default function AuthenticatedLayout({ header, children }) {
                     </li>
                     <li>
                         <NavLink
-                            href={route('logout')}
-                            active={route().current('logout')}
+                            href={route('transaction.index')}
+                            active={route().current('transaction.index')}
                             className=""
                         >
                             Penyata & Transaksi

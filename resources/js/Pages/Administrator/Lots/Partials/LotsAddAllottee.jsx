@@ -26,6 +26,10 @@ import { useForm } from '@inertiajs/react';
 
 
 export default function LotsAddAllottee({ allottees, lot }) {
+    
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [search, setSearch] = useState('');
+    const [selectedAllottee, setSelectedAllottee] = useState(null);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         // lot_id: lot.id || '', 
@@ -34,9 +38,13 @@ export default function LotsAddAllottee({ allottees, lot }) {
         ownership_type: '',
     });
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [search, setSearch] = useState('');
-    const [selectedAllottee, setSelectedAllottee] = useState(null);
+    useEffect(() => {
+        if (lot?.id) {
+            setData('lot_id', lot.id);
+        }
+    }, [lot, isDialogOpen]);
+
+
 
     const filteredAllottees = allottees.filter((allottee) =>
         allottee.allottee_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -155,7 +163,7 @@ export default function LotsAddAllottee({ allottees, lot }) {
                                             className="mt-2"
                                         />
                                     </div> 
-                                    <input type="text" name="lot_id" value={lot.id} />
+                                    {/* <input type="text" id="lot_id" name="lot_id" value={lot.id} /> */}
                                 </div>
                                 <PrimaryButton disabled={processing}>
                                     Tambah

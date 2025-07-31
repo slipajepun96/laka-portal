@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LotController;
 use App\Http\Controllers\AllotteeController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,6 +34,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/allottee', [AllotteeController::class, 'allotteeIndex'])->name('allottee.index');
     Route::post('/allottee/add', [AllotteeController::class, 'allotteeAdd'])->name('allottee.add');
+
+    Route::get('/transaction', [TransactionController::class, 'transactionIndex'])->name('transaction.index');
+    Route::get('/transaction/add-bulk', [TransactionController::class, 'transactionViewAddBulk'])->name('transaction.add-bulk');
+    Route::post('/transaction/save-bulk', [TransactionController::class, 'transactionSaveBulk'])->name('transaction.save-bulk');
 });
 
 require __DIR__.'/auth.php';

@@ -19,24 +19,8 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                 <div className="relative flex min-h-screen flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
                         <nav className="-mx-3 flex flex-1 justify-end">
-                                {auth.user ? (
-                                    <Link
-                                        href={route('dashboard')}
-                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]"
-                                    >
-                                        Dashboard
-                                    </Link>
-                                ) : (
-                                    <>
-                                        <Link
-                                            href={route('login')}
-                                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] hover:underline focus-visible:underline"
-                                        >
-                                            Log in Pentadbir Sistem
-                                        </Link>
-                                    </>
-                                )}
-                            </nav>
+
+                        </nav>
                         <main className="mt-6">
                             <section class="bg-gray-50">
                                 <div class="py-8 px-2 mx-auto max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
@@ -63,15 +47,15 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                                     <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Kata Laluan</label>
                                                     <input type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " required />
                                                 </div>
-                                                <div class="flex items-start">
+                                                {/* <div class="flex items-start">
                                                     <div class="flex items-center h-5">
                                                         <input id="remember" aria-describedby="remember" name="remember" type="checkbox" class="w-4 h-4 border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300" required />
                                                     </div>
-                                                    {/* <div class="ms-3 text-sm">
+                                                    <div class="ms-3 text-sm">
                                                     <label for="remember" class="font-medium text-gray-500">Remember this device</label>
-                                                    </div> */}
-                                                    {/* <a href="#" class="ms-auto text-sm font-medium text-blue-600 hover:underline ">Lost Password?</a> */}
-                                                </div>
+                                                    </div>
+                                                    <a href="#" class="ms-auto text-sm font-medium text-blue-600 hover:underline ">Lost Password?</a>
+                                                </div> */}
                                                 <button type="submit" class="w-full px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto ">Log Masuk</button>
                                                 {/* <div class="text-sm font-medium text-gray-900">
                                                     Not registered yet? <a class="text-blue-600 hover:underline">Create account</a>
@@ -84,7 +68,25 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                         </main>
 
                         <footer className="text-center text-sm text-black">
-                        PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
+                            {auth.user ? (
+                                <Link
+                                    href={route('dashboard')}
+                                    className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]"
+                                >
+                                    Dashboard
+                                </Link>
+                            ) : (
+                                <>
+                                    <Link
+                                        href={route('login')}
+                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] hover:underline focus-visible:underline"
+                                    >
+                                        Log Masuk Pentadbir Sistem
+                                    </Link>
+                                </>
+                            )}
+                            
+                        | PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
                             {/* Laravel v{laravelVersion} (PHP v{phpVersion}) */}
                         </footer>
                     </div>

@@ -123,12 +123,14 @@ class LotController extends Controller
             $ownership->lot_id = $validatedData['lot_id'];
             $ownership->allottee_id = $validatedData['allottee_id'];
             $ownership->ownership_type = $validatedData['ownership_type'];
-            $ownership->ownership_start_date = date("Y-m-d"); 
+            // $ownership->ownership_start_date = date("Y-m-d"); 
+            $ownership->ownership_start_date = now(); 
             $ownership->save();
 
             return redirect()->route('lots.index')->with('success', 'Pemilikan / Pentadbiran berjaya ditambah');
         } catch (\Exception $e) {
             // Handle any unexpected errors
+            
             return redirect()->back()->withErrors(['error' => 'An error occurred while adding the location. Please try again.']);
         }
 
