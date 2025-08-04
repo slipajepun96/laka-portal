@@ -6,9 +6,13 @@ use Inertia\Response;
 use App\Models\Lot;
 use App\Models\Allottee;
 use App\Models\Ownership;
+use App\Models\Transaction;
+use App\Models\TransactionList;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\LotsImport;
+use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 
@@ -16,8 +20,11 @@ class TransactionController extends Controller
 {
     public function transactionIndex(): Response
     {
+        $transactions = Transaction::all();
+        // dd($transactions);
+
         return Inertia::render('Administrator/Transaction/TransactionIndex', [
-            // 'transactions' => [], // Placeholder for transactions data
+            'transactions' => $transactions,
         ]);
     }
 
@@ -30,9 +37,9 @@ class TransactionController extends Controller
         // Add latest allottee name to each lot
         $lots = $lots->map(function($lot) {
             $latestOwnership = $lot->ownerships->first();
-            $lot->latest_allottee_name = $latestOwnership?->allottee?->allottee_name ?? '-';
-            $lot->latest_allottee_nric = $latestOwnership?->allottee?->allottee_nric ?? '-';
-            $lot->latest_allottee_id = $latestOwnership?->allottee?->id ?? '-';
+            $lot->latest_allottee_name = $latestOwnership?->allottee?->allottee_name ?? "-";
+            $lot->latest_allottee_nric = $latestOwnership?->allottee?->allottee_nric ?? "-";
+            $lot->latest_allottee_id = $latestOwnership?->allottee?->id ?? "-";
             return $lot;
         });
 
@@ -45,35 +52,115 @@ class TransactionController extends Controller
 
     public function transactionSaveBulk(Request $request): RedirectResponse
     {
-
-        // dd($request->all());
-     try {
-        // Validate the request
-        $validated = $request->validate([
-            'transaction_name' => 'required|string',
-            'transaction_posted_date' => 'required|date',
-            'transaction_type' => 'required|string|in:debit,credit,notice',
-            'transactions' => 'required|array',
-            // 'transactions.*.lot_id' => 'required|exists:lots,id',
-            // 'transactions.*.allottee_id' => 'required|exists:allottees,id',
-            // 'transactions.*.amount' => 'required|numeric|min:0',
-        ]);
-
-        // dd($validated);
-        // Log the request data for debugging
-        \Log::info('Transaction request:', [
-            'data' => $request->all(),
-            'validation_passed' => true
-        ]);
-
-        // Start database transaction
-        DB::beginTransaction();
         try {
-            // Your transaction saving logic here
-            // ...
+            $validated = $request->validate([
+                'transaction_name' => 'required|string',
+                'transaction_posted_date' => 'required|date',
+                'transaction_type' => 'required|string|in:debit,credit,notice',
+                'transactions' => 'required|array',
+                // 'transactions.*.lot_id' => 'required|exists:lots,id',
+                // 'transactions.*.allottee_id' => 'required|exists:allottees,id',
+                // 'transactions.*.amount' => 'required|numeric|min:0',
+            ]);
+
+            // dd($validated);
+            // \Log::info('Transaction request:', [
+            //     'data' => $request->all(),
+            //     'validation_passed' => true
+            // ]);
+
+            DB::beginTransaction();
+            try {
+                // asingkan dari lot yang takde org, save yang ada je
+
+                // save ibu transaction dulu
+                $transaction = new Transaction();
+                $transaction->transaction_name = $validated['transaction_name'];
+                $transaction->transaction_posted_date = $validated['transaction_posted_date'];
+                $transaction->transaction_type = $validated['transaction_type'];
+                $transaction->save();
+
+                $transaction_id = $transaction->id;
+                // dd($validated['transactions']);
+                // $i=0;   
+                $transaction_list_all = [];
+
+                foreach($validated['transactions'] as $transaction_list) 
+                {
+                    if(
+                        isset($transaction_list['allottee_id']) &&
+                        !empty($transaction_list['allottee_id']) &&
+                        $transaction_list['allottee_id'] !== '-')
+                    {
+                        // //debug 
+                        // $hahaha[$i][0] = $transaction_list['allottee_id'];
+                        // $hahaha[$i][1] = $transaction_list['lot_id'];
+                        // $hahaha[i][2] = $transaction_list['allottee_id'];
+                        // dd("test");
+                        $transaction_list_all[] = [
+                            'id' => Str::uuid(),
+                            'lot_id' => $transaction_list['lot_id'],
+                            'allottee_id' => $transaction_list['allottee_id'],
+                            'transaction_id' => $transaction_id,
+                            'transaction_type' => $validated['transaction_type'],
+                            'transaction_name' => $validated['transaction_name'],
+                            'transaction_posted_date' => $validated['transaction_posted_date'],
+                            'transaction_amount' => $transaction_list['amount'],
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                        // dd($transaction_list_all);
+
+                    }
+                    // $i++;
+                }
+                // dd($transaction_list_all);
+                if (!empty($transaction_list_all)) {
+                    TransactionList::insert($transaction_list_all);
+                }
+
+                DB::commit();
+                return redirect()->route('transaction.index')->with('success', 'Transaksi berjaya disimpan');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Database error:', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                return redirect()->back()
+                    ->with('error', 'Failed to save transactions')
+                    ->withErrors(['database' => $e->getMessage()]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Validation/Processing error:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            dd($e->getMessage());
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->with('error', 'An error occurred while processing the transactions')
+                ->withInput();
+        }
+    }
+
+    public function transactionDelete(Request $request): RedirectResponse
+    {
+        try {
+            DB::beginTransaction();
+            
+            // Delete all transaction list entries with this transaction_id
+            TransactionList::where('transaction_id', $request->id)->delete();
+            
+            // Delete the main transaction
+            Transaction::findOrFail($request->id)->delete();
 
             DB::commit();
-            return redirect()->back()->with('success', 'Transactions saved successfully');
+            return redirect()->back()->with([
+                'message' => 'Transaksi berjaya dipadam',
+                'type' => 'success'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Database error:', [
@@ -84,17 +171,5 @@ class TransactionController extends Controller
                 ->with('error', 'Failed to save transactions')
                 ->withErrors(['database' => $e->getMessage()]);
         }
-    } catch (\Exception $e) {
-        \Log::error('Validation/Processing error:', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-        
-        dd($e->getMessage());
-        return redirect()->back()
-            ->withErrors(['error' => $e->getMessage()])
-            ->with('error', 'An error occurred while processing the transactions')
-            ->withInput();
     }
-}
 }
