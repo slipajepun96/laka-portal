@@ -195,7 +195,7 @@ export default function TransactionAddBulkTransaction({ lots }) {
                     // isFocused={true}
                     type="number"
                     onChange={e => setRowAmounts(prev => ({ ...prev, [row.id]: e.target.value }))}
-                    required
+                    
                 />
             ),
         },

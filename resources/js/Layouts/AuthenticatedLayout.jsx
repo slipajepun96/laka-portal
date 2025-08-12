@@ -60,7 +60,7 @@ export default function AuthenticatedLayout({ header, children }) {
                     <li>
                         <NavLink
                             href={route('transaction.index')}
-                            active={route().current('transaction.index')}
+                            active={route().current('transaction.*')}
                             className=""
                         >
                             Penyata & Transaksi

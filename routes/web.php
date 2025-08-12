@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/transaction/add-bulk', [TransactionController::class, 'transactionViewAddBulk'])->name('transaction.add-bulk');
     Route::post('/transaction/save-bulk', [TransactionController::class, 'transactionSaveBulk'])->name('transaction.save-bulk');
     Route::post('/transaction/delete', [TransactionController::class, 'transactionDelete'])->name('transaction.delete');
+    Route::get('/transaction/view/{transaction}', [TransactionController::class, 'transactionView'])->name('transaction.view');
 });
 
 require __DIR__.'/auth.php';

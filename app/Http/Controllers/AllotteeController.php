@@ -32,6 +32,7 @@ class AllotteeController extends Controller
             'allottee_bank_acc_num' => 'required',
         ]);
 
+
         try {
             $allottee = new Allottee();
             $allottee->allottee_nric = $validatedData['allottee_nric'];
@@ -41,7 +42,14 @@ class AllotteeController extends Controller
             $allottee->allottee_email = $validatedData['allottee_email'];
             $allottee->allottee_bank_name = $validatedData['allottee_bank_name'];
             $allottee->allottee_bank_acc_num = $validatedData['allottee_bank_acc_num'];
+
+            $firstName = explode(' ', $allottee->allottee_name ?? '')[0] ?? '';
+            $nricNumbers = substr($allottee->allottee_nric ?? '', 6, 6);
+            $allottee->password = bcrypt($firstName . $nricNumbers);
+
             $allottee->save();
+
+
 
             return redirect()->route('allottee.index')->with('success', 'Peserta berjaya ditambah');
         } catch (\Exception $e) {

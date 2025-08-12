@@ -54,4 +54,9 @@ class Lot extends Model
         return $this->hasMany(\App\Models\Ownership::class, 'lot_id', 'id');
     }
 
+    public function transactionlists()
+    {
+        return $this->hasMany(\App\Models\TransactionList::class, 'lot_id', 'id');
+    }
+
 }

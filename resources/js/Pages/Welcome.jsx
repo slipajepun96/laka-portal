@@ -1,4 +1,9 @@
-import { Head, Link } from '@inertiajs/react';
+import Checkbox from '@/Components/Checkbox';
+import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
+import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Welcome({ auth, laravelVersion, phpVersion }) {
     const handleImageError = () => {
@@ -12,6 +17,20 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
         document.getElementById('background')?.classList.add('!hidden');
     };
 
+     const { data, setData, post, processing, errors, reset } = useForm({
+            email: '',
+            password: '',
+            remember: false,
+        });
+    
+        const submit = (e) => {
+            e.preventDefault();
+    
+            post(route('login'), {
+                onFinish: () => reset('password'),
+            });
+        };
+
     return (
         <>
             <Head title="Welcome" />
@@ -22,7 +41,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
                         </nav>
                         <main className="mt-6">
-                            <section class="bg-gray-50">
+                            <section class="sm:bg-white md:bg-gray-50">
                                 <div class="py-8 px-2 mx-auto max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
                                     <div class="flex flex-col justify-center">
                                         <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">Portal Laka</h1>
@@ -34,29 +53,80 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                         </a> */}
                                     </div>
                                     <div>
-                                        <div class="w-full lg:max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow-xl">
+                                        <div class="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-white rounded-lg md:shadow-xl">
                                             <h2 class="text-2xl font-bold text-gray-900">
-                                                Log Masuk Peserta / Pentadbir
+                                                Log Masuk Peserta
                                             </h2>
-                                            <form class="mt-8 space-y-6" action="#">
+                                            {/* <form class="mt-8 space-y-6" action="#">
                                                 <div>
                                                     <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Nombor Kad Pengenalan Peserta / Pentadbir</label>
-                                                    <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="941301065678" required />
+                                                    <input type="text" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="941301065678" required />
                                                 </div>
                                                 <div>
                                                     <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Kata Laluan</label>
                                                     <input type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " required />
                                                 </div>
-                                                {/* <div class="flex items-start">
-                                                    <div class="flex items-center h-5">
-                                                        <input id="remember" aria-describedby="remember" name="remember" type="checkbox" class="w-4 h-4 border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300" required />
-                                                    </div>
-                                                    <div class="ms-3 text-sm">
-                                                    <label for="remember" class="font-medium text-gray-500">Remember this device</label>
-                                                    </div>
-                                                    <a href="#" class="ms-auto text-sm font-medium text-blue-600 hover:underline ">Lost Password?</a>
-                                                </div> */}
+
                                                 <button type="submit" class="w-full px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto ">Log Masuk</button>
+
+                                            </form> */}
+                                            <form class="md:mt-8 md:space-y-6" action="#" onSubmit={submit}>
+                                                <div>
+                                                    <InputLabel htmlFor="email" value="No. Kad Pengenalan" />
+
+                                                    <TextInput
+                                                        id="email"
+                                                        type="email"
+                                                        name="email"
+                                                        value={data.email}
+                                                        className="mt-1 block w-full"
+                                                        autoComplete="username"
+                                                        isFocused={true}
+                                                        onChange={(e) => setData('email', e.target.value)}
+                                                    />
+
+                                                    <InputError message={errors.email} className="mt-2" />
+                                                </div>
+                                                <div>
+                                                    <InputLabel htmlFor="password" value="Kata Laluan" />
+                                                    <div className=' p-2 bg-sky-200 rounded-lg text-sm text-gray-700 mb-2'>
+                                                        Kata laluan adalah kombinasi <b>perkataan nama pertama (huruf besar)</b> dan <b>6 digit terakhir nombor kad pengenalan </b> anda.
+                                                        <br />Contoh
+                                                        <br /> Nama : <b>Siti</b> Zairah binti Ahmad
+                                                        <br /> No. K/P : 941301<b>065678</b>
+                                                        <br />
+                                                        <b>Kata Laluan : SITI065678</b>
+
+                                                    </div>
+
+                                                    <TextInput
+                                                        id="password"
+                                                        type="password"
+                                                        name="password"
+                                                        value={data.password}
+                                                        className="mt-1 block w-full"
+                                                        autoComplete="current-password"
+                                                        onChange={(e) => setData('password', e.target.value)}
+                                                    />
+
+                                                    <InputError message={errors.password} className="mt-2" />
+                                                </div>
+                                                <div className="mt-4 flex items-center justify-start">
+                                                    {/* {canResetPassword && ( */}
+
+                                                    {/* )} */}
+
+                                                    <PrimaryButton className="sm:w-full" disabled={processing}>
+                                                        Log Masuk
+                                                    </PrimaryButton>
+                                                     <Link
+                                                        href={route('password.request')}
+                                                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                    >
+                                                        Forgot your password?
+                                                    </Link>
+                                                </div>
+                                                {/* <button type="submit" class="w-full px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto ">Login to your account</button> */}
                                                 {/* <div class="text-sm font-medium text-gray-900">
                                                     Not registered yet? <a class="text-blue-600 hover:underline">Create account</a>
                                                 </div> */}

@@ -37,4 +37,14 @@ class TransactionList extends Model
         'transaction_type',
         'transaction_amount',
     ];
+
+    public function lot()
+    {
+        return $this->belongsTo(\App\Models\Lot::class, 'lot_id', 'id');
+    }
+
+    public function allottee()
+    {
+        return $this->belongsTo(\App\Models\Allottee::class, 'allottee_id', 'id');
+    }
 }

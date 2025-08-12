@@ -57,4 +57,9 @@ class Allottee extends Model
         return $this->hasMany(\App\Models\Ownership::class, 'allottee_id', 'id');
     }
 
+    public function transactionlists()
+    {
+        return $this->hasMany(\App\Models\TransactionList::class, 'allottee_id', 'id');
+    }
+
 }

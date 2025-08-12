@@ -172,4 +172,66 @@ class TransactionController extends Controller
                 ->withErrors(['database' => $e->getMessage()]);
         }
     }
+
+    public function transactionView($transactionId): Response
+    {
+        try {
+            $transaction = Transaction::findOrFail($transactionId);
+
+            $transaction_lists = TransactionList::where('transaction_id', $transactionId)
+                ->with(['allottee', 'lot']) // Load relationships
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'id' => $item->id,
+                        'transaction_id' => $item->transaction_id,
+                        'lot_id' => $item->lot_id,
+                        'allottee_id' => $item->allottee_id,
+                        'transaction_amount' => $item->transaction_amount,
+                        'created_at' => $item->created_at,
+                        'updated_at' => $item->updated_at,
+                        // Add related data
+                        'allottee_name' => $item->allottee?->allottee_name ?? '-',
+                        'allottee_nric' => $item->allottee?->allottee_nric ?? '-',
+                        'lot_num' => $item->lot?->lot_num ?? '-',
+                    ];
+                })->sortBy('lot_num')->values(); 
+
+            
+
+            // $lots = Lot::with(['ownerships' => function($q) {
+            //     $q->orderByDesc('ownership_start_date'); // or 'created_at'
+            // }, 'ownerships.allottee'])->get();
+
+            // // Add latest allottee name to each lot
+            // $lots = $lots->map(function($lot) {
+            //     $latestOwnership = $lot->ownerships->first();
+            //     $lot->latest_allottee_name = $latestOwnership?->allottee?->allottee_name ?? "-";
+            //     $lot->latest_allottee_nric = $latestOwnership?->allottee?->allottee_nric ?? "-";
+            //     $lot->latest_allottee_id = $latestOwnership?->allottee?->id ?? "-";
+            //     return $lot;
+            // });
+            // dd($transaction);
+
+            return Inertia::render('Administrator/Transaction/TransactionView', [
+                'transaction' => $transaction,
+                'transaction_lists' => $transaction_lists,
+                // 'allottees' => $allottees,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to load transaction:', [
+                'transaction_id' => $transactionId,
+                'error' => $e->getMessage()
+            ]);
+
+            $transactions = Transaction::all();
+
+            return Inertia::render('Administrator/Transaction/TransactionIndex', [
+                'error' => 'Failed to load transaction details',
+                'transactions' => $transactions
+            ]);
+        }
+        $transaction = Transaction::all()->where('id', $transactionId)->first();
+
+    }
 }
