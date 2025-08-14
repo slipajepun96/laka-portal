@@ -3,7 +3,6 @@ import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
 import AllotteeAdd from './Partials/AllotteeAdd';
 import LotsEditLot from './Partials/LotsEditLot';
-import LotUploadExcel from './Partials/LotUploadExcel';
 
 export default function AllotteeIndex({ allottees }) {
     // console.log(lots);
