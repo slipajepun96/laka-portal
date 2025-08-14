@@ -8,9 +8,49 @@ use App\Models\Allottee;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class AllotteeController extends Controller
 {
+    public function allotteeLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'allottee_nric' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+
+        if (Auth::guard('allottee')->attempt($credentials)) 
+        {
+            $request->session()->regenerate();
+            return redirect('/allottee');
+        }
+
+        return back()->withErrors([
+            'allottee_nric' => 'The provided credentials do not match our records.',
+            'password' => 'The provided credentials do not match our records.',
+        ]);
+    }
+
+    public function allotteeLogout(Request $request)
+    {
+        Auth::guard('allottee')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
+        return redirect('/');
+    }
+
+    public function allotteeMain()
+    {
+        $allottee = Auth::guard('allottee')->user();
+        
+        return Inertia::render('Allottee/AllotteeIndex', [
+            'allottee' => $allottee
+        ]);
+    }
+
     public function allotteeIndex(Request $request): Response
     {
         $allottees = Allottee::get()->toArray();
@@ -22,6 +62,7 @@ class AllotteeController extends Controller
 
     public function allotteeAdd(Request $request): RedirectResponse
     {
+
         $validatedData = $request->validate([
             'allottee_nric' => 'required|string|max:12',
             'allottee_name' => 'required|string|max:255',

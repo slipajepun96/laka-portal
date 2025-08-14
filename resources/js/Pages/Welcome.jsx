@@ -18,7 +18,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
     };
 
      const { data, setData, post, processing, errors, reset } = useForm({
-            email: '',
+            allottee_nric: '',
             password: '',
             remember: false,
         });
@@ -26,7 +26,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
         const submit = (e) => {
             e.preventDefault();
     
-            post(route('login'), {
+            post(route('allottee.login'), {
                 onFinish: () => reset('password'),
             });
         };
@@ -42,7 +42,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                         </nav>
                         <main className="mt-6">
                             <section class="sm:bg-white md:bg-gray-50">
-                                <div class="py-8 px-2 mx-auto max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
+                                <div class=" py-2 md:py-8 px-2 md:mx-auto md:max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
                                     <div class="flex flex-col justify-center">
                                         <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">Portal Laka</h1>
                                         <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl">Selamat datang ke Portal Laka!<br/> Tempat untuk menyemak maklumat dan penyata transaksi bagi peserta RTK Paya Laka </p>
@@ -72,20 +72,20 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                             </form> */}
                                             <form class="md:mt-8 md:space-y-6" action="#" onSubmit={submit}>
                                                 <div>
-                                                    <InputLabel htmlFor="email" value="No. Kad Pengenalan" />
+                                                    <InputLabel htmlFor="allottee_nric" value="No. Kad Pengenalan" />
 
                                                     <TextInput
-                                                        id="email"
-                                                        type="email"
-                                                        name="email"
-                                                        value={data.email}
+                                                        id="allottee_nric"
+                                                        type="text"
+                                                        name="allottee_nric"
+                                                        value={data.allottee_nric}
                                                         className="mt-1 block w-full"
-                                                        autoComplete="username"
+                                                        autoComplete="allottee_nric"
                                                         isFocused={true}
-                                                        onChange={(e) => setData('email', e.target.value)}
+                                                        onChange={(e) => setData('allottee_nric', e.target.value)}
                                                     />
 
-                                                    <InputError message={errors.email} className="mt-2" />
+                                                    <InputError message={errors.allottee_nric} className="mt-2" />
                                                 </div>
                                                 <div>
                                                     <InputLabel htmlFor="password" value="Kata Laluan" />
@@ -116,12 +116,12 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
                                                     {/* )} */}
 
-                                                    <PrimaryButton className="sm:w-full" disabled={processing}>
+                                                    <PrimaryButton className="" disabled={processing}>
                                                         Log Masuk
                                                     </PrimaryButton>
                                                      <Link
                                                         href={route('password.request')}
-                                                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                        className="rounded-md ms-2 text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                                     >
                                                         Forgot your password?
                                                     </Link>

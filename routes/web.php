@@ -7,6 +7,7 @@ use App\Http\Controllers\TransactionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Middleware\AllotteeAuth;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -41,5 +42,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/transaction/delete', [TransactionController::class, 'transactionDelete'])->name('transaction.delete');
     Route::get('/transaction/view/{transaction}', [TransactionController::class, 'transactionView'])->name('transaction.view');
 });
+
+
+//allottee auth
+Route::post('/allottee/login', [AllotteeController::class, 'allotteeLogin'])->name('allottee.login');
+Route::post('/allottee/logout', [AllotteeController::class, 'allotteeLogout'])->name('allottee.logout');
+
+Route::middleware(AllotteeAuth::class)->group(function () {
+    Route::get('/u', [AllotteeController::class, 'allotteeMain'])->name('allottee.main');
+});
+
+
+
 
 require __DIR__.'/auth.php';

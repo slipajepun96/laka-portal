@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'allottee' => [
+            'driver' => 'session',
+            'provider' => 'allottees',
+        ],
     ],
 
     /*
@@ -63,6 +67,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+
+        'allottees' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\Allottee::class),
         ],
 
         // 'users' => [
