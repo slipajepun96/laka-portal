@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
 import AllotteeAdd from './Partials/AllotteeAdd';
 import LotsEditLot from './Partials/LotsEditLot';
+import AllotteeGenerateDefaultPassword from './Partials/AllotteeGenerateDefaultPassword';
 
 export default function AllotteeIndex({ allottees }) {
     // console.log(lots);
@@ -51,7 +52,7 @@ export default function AllotteeIndex({ allottees }) {
                 <div className="mx-auto max-w-7xl sm:px-2 lg:px-2">
                     <div className='mb-4 gap-2 flex '>
                         <AllotteeAdd />
-                        {/* <LotUploadExcel /> */}
+                        <AllotteeGenerateDefaultPassword />
                     </div>
 
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">

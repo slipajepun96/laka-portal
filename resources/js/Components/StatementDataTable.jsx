@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function DataTable({ columns, data, className = "", showSearch = true }) {
+export default function StatementDataTable({ columns, data, className = "", showSearch = true }) {
     const [search, setSearch] = useState('');
 
     // Filter data based on search input
@@ -81,10 +81,30 @@ export default function DataTable({ columns, data, className = "", showSearch = 
                                 </td>
                             </tr>
                         )}
+                        {/* total row */}
+                        <tr>
+                            <td
+                                colSpan={columns.length - 1}
+                                className="px-4 py-2 text-right font-bold"
+                            >
+                                Jumlah
+                            </td>
+                            <td className="px-4 py-2 font-bold">
+                                RM {parseFloat(filteredData.reduce((acc, row) => {
+                                    if (row.transaction_type === 'debit') {
+                                        acc += parseFloat(row.transaction_amount || 0);
+                                    } else if (row.transaction_type === 'credit') {
+                                        acc -= parseFloat(row.transaction_amount || 0);
+                                    }
+                                    return acc;
+                                }, 0)).toLocaleString('ms-MY', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-            {/* Row Count Summary */}
 
         </div>
     );

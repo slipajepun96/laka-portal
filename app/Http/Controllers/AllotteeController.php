@@ -5,11 +5,15 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Lot;
 use App\Models\Allottee;
+use App\Models\TransactionList;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+
+ini_set('max_execution_time', 300); // 5 minutes
+ini_set('memory_limit', '512M');
 
 class AllotteeController extends Controller
 {
@@ -24,7 +28,7 @@ class AllotteeController extends Controller
         if (Auth::guard('allottee')->attempt($credentials)) 
         {
             $request->session()->regenerate();
-            return redirect('/allottee');
+            return redirect('/u');
         }
 
         return back()->withErrors([
@@ -45,9 +49,13 @@ class AllotteeController extends Controller
     public function allotteeMain()
     {
         $allottee = Auth::guard('allottee')->user();
+        $transactions = TransactionList::where('allottee_id', $allottee->id)->orderBy('transaction_posted_date')->get();
+
+        // dd($transactions);
         
         return Inertia::render('Allottee/AllotteeIndex', [
-            'allottee' => $allottee
+            'allottee' => $allottee,
+            'transactions' => $transactions,
         ]);
     }
 
@@ -98,5 +106,37 @@ class AllotteeController extends Controller
             return redirect()->back()->withErrors(['error' => 'An error occurred while adding the location. Please try again.']);
         }
 
+    }
+
+    public function allotteeGenerateDefaultPassword(Request $request): RedirectResponse
+    {
+        $allottees = Allottee::all();
+        // dd($allottees);
+        try {
+            foreach ($allottees as $allottee) {
+                try {
+
+                    $firstName = explode(' ', $allottee->allottee_name ?? '')[0] ?? '';
+                    $nricNumbers = substr($allottee->allottee_nric ?? '', 6, 6);
+                    $allottee->password = bcrypt($firstName . $nricNumbers);
+
+                    // update the allottee with the new password
+                    $allottee->save();
+
+                } catch (\Exception $e) {
+                    \Log::error('Error generating password for allottee ID ' . $allottee->id, [
+                        'message' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    continue; // Skip to the next allottee
+                }
+            }
+            return redirect()->route('allottee.index')->with('success', 'Kata laluan peserta berjaya dijana');
+        } catch (\Exception $e) {
+            \Log::error('Error generating default password for allottees', [
+                'message' => $e->getMessage(),
+            ]);
+            return redirect()->back()->withErrors(['error' => 'An error occurred while generating default passwords.']);
+        }
     }
 }

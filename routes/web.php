@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/allottee', [AllotteeController::class, 'allotteeIndex'])->name('allottee.index');
     Route::post('/allottee/add', [AllotteeController::class, 'allotteeAdd'])->name('allottee.add');
+    Route::post('/allottee/generate-default-password', [AllotteeController::class, 'allotteeGenerateDefaultPassword'])->name('allottee.generate_default_password');
 
     Route::get('/transaction', [TransactionController::class, 'transactionIndex'])->name('transaction.index');
     Route::get('/transaction/add-bulk', [TransactionController::class, 'transactionViewAddBulk'])->name('transaction.add-bulk');
