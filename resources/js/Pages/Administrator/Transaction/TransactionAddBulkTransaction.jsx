@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/Components/ui/dropdown-menu"
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
@@ -19,12 +19,12 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from "@/Components/ui/select"
 import PrimaryButton from '@/Components/PrimaryButton';
 import { useState, useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar } from "@/Components/ui/calendar";
+import { Popover, PopoverTrigger, PopoverContent } from "@/Components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { constructFromSymbol } from 'date-fns/constants';

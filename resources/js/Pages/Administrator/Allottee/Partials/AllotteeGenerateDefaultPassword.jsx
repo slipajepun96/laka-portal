@@ -11,7 +11,7 @@ import {
     DialogTitle,
     DialogTrigger,
     DialogDescription
-} from '@/components/ui/dialog';
+} from '@/Components/ui/dialog';
 import { useForm } from '@inertiajs/react';
 import {
     Select,
@@ -19,7 +19,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from "@/Components/ui/select"
 
 
 export default function AllotteeGenerateDefaultPassword({ }) {
