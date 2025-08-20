@@ -46,16 +46,33 @@ class AllotteeController extends Controller
         return redirect('/');
     }
 
-    public function allotteeMain()
+    public function allotteeMain(Request $request)
     {
         $allottee = Auth::guard('allottee')->user();
-        $transactions = TransactionList::where('allottee_id', $allottee->id)->orderBy('transaction_posted_date')->get();
-
-        // dd($transactions);
+        $year = $request->input('year', session('selected_year', date('Y')));
         
+        $transactions = TransactionList::where('allottee_id', $allottee->id)
+            ->whereYear('transaction_posted_date', $year)
+            ->orderBy('transaction_posted_date')
+            ->get();
+
         return Inertia::render('Allottee/AllotteeIndex', [
             'allottee' => $allottee,
             'transactions' => $transactions,
+            'year' => $year
+        ]);
+    }
+
+    public function allotteeStatement(Request $request): Response
+    {
+
+        $year = $request->input('year', date('Y')); 
+        $allottee = Auth::guard('allottee')->user();
+        $transactions = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->orderBy('transaction_posted_date')->get();
+
+        return redirect()->route('allottee.main')->with([
+            'transactions' => $transactions,
+            'year' => $year
         ]);
     }
 

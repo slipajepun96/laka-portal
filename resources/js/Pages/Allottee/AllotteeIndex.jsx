@@ -2,8 +2,45 @@ import AllotteeLayout from '@/Layouts/AllotteeLayout';
 import { Head } from '@inertiajs/react';
 import AllotteeStatementView from './Partials/AllotteeStatementView';
 import PrimaryButton from '@/Components/PrimaryButton';
+import { useForm, router } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
-export default function Dashboard({ allottee , transactions }) {
+export default function Dashboard({ allottee , transactions , year }) {
+
+    const currentYear = new Date().getFullYear();
+    const [selectedYear, setSelectedYear] = useState(year || currentYear);
+    const [loading, setLoading] = useState(false);
+
+ const handleYearChange = (newYear) => {
+        setSelectedYear(newYear);
+        setLoading(true);
+
+        // Use Inertia.reload() with only specific props
+        router.reload({
+            data: { year: newYear },
+            only: ['transactions'], // Only reload transactions prop
+            preserveScroll: true,
+            onFinish: () => setLoading(false)
+        });
+    };
+
+
+    // useEffect(() => {
+    //     if (shouldSubmit) {
+    //         post(route('allottee.statement'), { preserveScroll: true });
+    //         setShouldSubmit(false);
+    //     }
+    // }, [data.year, shouldSubmit]);
+    
+
+
     return (
         <AllotteeLayout
             header={
@@ -15,10 +52,10 @@ export default function Dashboard({ allottee , transactions }) {
             <Head title="Dashboard" />
 
             <div className="flex flex-col justify-center gap-4 px-2 lg:px-8">
-                <div className="flex flex-col md:flex-row md:justify-between  bg-white p-4 rounded-lg shadow">
+                <div className="flex flex-col md:flex-row md:justify-between  bg-gray-900 p-4 rounded-lg shadow">
                     <div>
-                        <p className='text-gray-600 font-bold text-2xl'>{allottee.allottee_name}</p>
-                        <p className='text-gray-600 font-bold text-md'>No. Kad Pengenalan : {allottee.allottee_nric}</p>
+                        <p className='font-bold text-white text-2xl'>{allottee.allottee_name}</p>
+                        <p className='text-gray-300 font-bold text-md'>No. Kad Pengenalan : {allottee.allottee_nric}</p>
                     </div>
                     <div>
                         <PrimaryButton className='bg-red-500 hover:bg-red-600 text-white'>
@@ -31,7 +68,42 @@ export default function Dashboard({ allottee , transactions }) {
 
                 </div>
                 <div className=" max-w-7xl">
-                    <AllotteeStatementView transactions={transactions} />
+                        <div className='flex flex-row w-full gap-2'>
+                            <div className='flex-shrink-0'>
+                                <Select
+                                    onValueChange={handleYearChange}
+                                    value={selectedYear.toString()}
+                                    disabled={loading}
+                                    className="w-full">
+                                    <SelectTrigger className="w-full bg-white min-w-[120px]">
+                                        <SelectValue placeholder="Tahun" />
+                                    </SelectTrigger>
+                                    <SelectContent 
+                                        id="year"
+                                        name="year"
+                                    >
+                                        <SelectItem value="2025">2025</SelectItem>
+                                        <SelectItem value="2024">2024</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <PrimaryButton>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+                                    Muat Turun PDF
+                                </PrimaryButton>
+                            </div>
+                        </div>
+                        {loading ? (
+                        <div className="animate-pulse">Loading...</div>
+                        ) : (
+                            <AllotteeStatementView 
+                                transactions={transactions} 
+                                year={selectedYear} 
+                            />
+                        )}
                 </div>
             </div>
         </AllotteeLayout>

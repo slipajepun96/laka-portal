@@ -37,9 +37,9 @@ export default function StatementDataTable({ columns, data, className = "", show
             )}
 
             {/* Table */}
-            <div className="mt-4 text-sm text-gray-600">
+            {/* <div className="mt-4 text-sm text-gray-600">
                 Menunjukkan {filteredData.length} daripada {data.length} baris.
-            </div>
+            </div> */}
             
             <div className="overflow-x-auto">
                 <table className="min-w-full border-collapse border border-gray-200">
@@ -85,11 +85,11 @@ export default function StatementDataTable({ columns, data, className = "", show
                         <tr>
                             <td
                                 colSpan={columns.length - 1}
-                                className="px-4 py-2 text-right font-bold"
+                                className="px-4 py-2 text-right text-lg uppercase font-bold"
                             >
                                 Jumlah
                             </td>
-                            <td className="px-4 py-2 font-bold">
+                            <td className="px-4 py-2 text-lg uppercase font-bold text-right">
                                 RM {parseFloat(filteredData.reduce((acc, row) => {
                                     if (row.transaction_type === 'debit') {
                                         acc += parseFloat(row.transaction_amount || 0);

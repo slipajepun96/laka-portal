@@ -13,63 +13,14 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-export default function AllotteeStatementView({ transactions }) {
+export default function AllotteeStatementView({ transactions, year }) {
     const d = new Date();
-    let year = d.getFullYear();
+    let currentYear = d.getFullYear();
     const { data, setData, post, processing, errors, reset } = useForm({
-        year: year,
+        year: year || currentYear,
     });
+
     let balance = 0;
-
-
-    // console.log(transactions);
-    // const columns = [
-    //     { Header: 'Transaksi', accessor: 'transaction_name' },
-    //     // { Header: 'No. Fail / Geran', accessor: 'lot_file_num' },
-    //     {
-    //         Header: 'Debit',
-    //         accessor: ['transaction_type', 'transaction_amount'],
-    //         Cell: ({ row }) => (
-    //             <div>
-    //                 {row.transaction_type === 'debit' ? (
-    //                     <span className='text-green-500 font-bold'>RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-    //                         minimumFractionDigits: 2,
-    //                         maximumFractionDigits: 2
-    //                     })}</span>
-    //                 ) : '-'}
-    //             </div>
-    //         ),
-    //     },
-    //     {
-    //         Header: 'Kredit',
-    //         accessor: ['transaction_type', 'transaction_amount'],
-    //         Cell: ({ row }) => (
-    //             <div>
-    //                 {row.transaction_type === 'credit' ? (
-    //                     <span className='text-red-500 font-bold'>RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-    //                         minimumFractionDigits: 2,
-    //                         maximumFractionDigits: 2
-    //                     })}</span>
-    //                 ) : '-'}
-    //             </div>
-    //         ),
-    //     },
-    //     {
-    //         Header: 'Jumlah ',
-    //         accessor: ['transaction_type', 'transaction_amount'],
-    //         Cell: ({ row }) => (
-    //             <div>
-    //                 {row.transaction_type === 'credit' ? (
-    //                     <span className='text-red-500 font-bold'>RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-    //                         minimumFractionDigits: 2,
-    //                         maximumFractionDigits: 2
-    //                     })}</span>
-    //                 ) : '-'}
-    //             </div>
-    //         ),
-    //     },
-
-    // ];
 
     const columns = [
     {
@@ -98,7 +49,7 @@ export default function AllotteeStatementView({ transactions }) {
                         <div>
                             <span className="text-gray-600">Debit: </span>
                             {row.transaction_type === 'debit' ? (
-                                <span className='text-green-500 font-bold'>
+                                <span className='text-green-500 md:text-lg font-black text-right'>
                                     RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
@@ -109,7 +60,7 @@ export default function AllotteeStatementView({ transactions }) {
                         <div>
                             <span className="text-gray-600">Kredit: </span>
                             {row.transaction_type === 'credit' ? (
-                                <span className='text-red-500 font-bold'>
+                                <span className='text-red-500 md:text-lg font-bold text-right'>
                                     RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
@@ -126,7 +77,7 @@ export default function AllotteeStatementView({ transactions }) {
         Header: 'Baki',
         accessor: 'transaction_amount',
         Cell: ({ row }) => (
-            <div className="font-bold">
+            <div className="md:text-lg font-bold text-right">
                 RM {parseFloat(balance || 0).toLocaleString('ms-MY', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
@@ -139,36 +90,10 @@ export default function AllotteeStatementView({ transactions }) {
 
     return (
         <div className='w-full max-w-7xl'>
-            <div>
 
-                {/* <InputLabel
-                    htmlFor="year"
-                    value="Tahun Transaksi"
-                /> */}
-                <Select
-                    // value={data.year}
-                    onValueChange={(value) =>
-                        setData('year', value)
-                }>
-                    <SelectTrigger className="w-full md:w-1/6 bg-white">
-                        <SelectValue placeholder="Tahun" />
-                    </SelectTrigger>
-                    <SelectContent 
-                        id="year"
-                        name="year"
-                    >
-                        <SelectItem value="2025">2025</SelectItem>
-                        <SelectItem value="2024">2024</SelectItem>
-                    </SelectContent>
-                </Select>
-                <InputError
-                    message={errors.year}
-                    className="mt-2"
-                />
-            </div>
-            <p className='text-lg font-semibold'>Penyata Transaksi Peserta RTK Paya Laka {data.year} </p>
+            <p className='text-lg font-semibold'>Penyata Transaksi Peserta RTK Paya Laka {year} </p>
             <StatementDataTable columns={columns} data={transactions} className="overflow-hidden " showSearch={false} />
-            <p>
+            <p className='text-sm text-gray-500 my-4'>
                 <b>Nota:</b> Penyata ini mungkin mengandungi kesilapan. Sekiranya terdapat sebarang kesilapan atau pertanyaan mengenai penyata ini, sila hubungi PKPP Agro Sdn. Bhd. di talian 011-26637117.
             </p>
         </div>

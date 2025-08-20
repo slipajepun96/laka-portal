@@ -42,13 +42,13 @@ export default function DataTable({ columns, data, className = "", showSearch = 
             </div>
             
             <div className="overflow-x-auto">
-                <table className="min-w-full border-collapse border border-gray-200">
+                <table className="min-w-full border-collapse border border-gray-200 bg-white">
                     <thead>
                         <tr>
                             {columns.map((column) => (
                                 <th
                                     key={column.accessor || column.Header}
-                                    className="px-4 py-2 text-left  border-gray-200 bg-gray-100"
+                                    className="px-4 py-2 text-left  border-gray-200 bg-white"
                                 >
                                     {column.Header}
                                 </th>
