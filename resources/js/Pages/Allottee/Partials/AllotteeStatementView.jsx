@@ -74,11 +74,11 @@ export default function AllotteeStatementView({ transactions, year }) {
         },
     },
     {
-        Header: 'Baki',
+        Header: 'Baki (RM)',
         accessor: 'transaction_amount',
         Cell: ({ row }) => (
-            <div className="md:text-lg font-bold text-right">
-                RM {parseFloat(balance || 0).toLocaleString('ms-MY', {
+            <div className="text-sm md:text-lg font-bold text-right text-nowrap">
+                {parseFloat(balance || 0).toLocaleString('ms-MY', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 })}

@@ -52,7 +52,11 @@ Route::post('/allottee/logout', [AllotteeController::class, 'allotteeLogout'])->
 Route::middleware(AllotteeAuth::class)->group(function () {
     Route::get('/u', [AllotteeController::class, 'allotteeMain'])->name('allottee.main');
     Route::post('/u', [AllotteeController::class, 'allotteeStatement'])->name('allottee.statement');
+    Route::post('/u/logout', [AllotteeController::class, 'allotteeLogout'])->name('allottee.logout');
+    Route::post('/u/statement-download', [AllotteeController::class, 'allotteeStatementDownload'])->name('allottee.statement_download');
 });
+
+
 
 
 

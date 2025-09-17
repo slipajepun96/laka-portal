@@ -1,5 +1,5 @@
 import AllotteeLayout from '@/Layouts/AllotteeLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AllotteeStatementView from './Partials/AllotteeStatementView';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { useForm, router } from '@inertiajs/react';
@@ -18,7 +18,12 @@ export default function Dashboard({ allottee , transactions , year }) {
     const [selectedYear, setSelectedYear] = useState(year || currentYear);
     const [loading, setLoading] = useState(false);
 
- const handleYearChange = (newYear) => {
+    const { data: PDFData, setData: setPDFData, post: postPDF } = useForm({
+        year: selectedYear,
+        transactions: transactions
+    });
+
+    const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
         setLoading(true);
 
@@ -27,8 +32,20 @@ export default function Dashboard({ allottee , transactions , year }) {
             data: { year: newYear },
             only: ['transactions'], // Only reload transactions prop
             preserveScroll: true,
-            onFinish: () => setLoading(false)
+            onFinish: () => 
+                {
+                    setLoading(false);
+
+                    setPDFData({
+                        year: newYear,
+                        transactions: transactions
+                    });
+                }
         });
+    };
+    const handlePDFDownload = (e) => {
+        e.preventDefault();
+        postPDF(route('allottee.statement_download'));
     };
 
 
@@ -58,12 +75,22 @@ export default function Dashboard({ allottee , transactions , year }) {
                         <p className='text-gray-300 font-bold text-md'>No. Kad Pengenalan : {allottee.allottee_nric}</p>
                     </div>
                     <div>
-                        <PrimaryButton className='bg-red-500 hover:bg-red-600 text-white'>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                            </svg>
-                            Log Keluar
-                        </PrimaryButton>
+                        {/* <form action="{route('allottee.logout')}" method="post">
+                            <PrimaryButton className='bg-red-500 hover:bg-red-600 text-white'>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                                </svg>
+                                Log Keluar
+                            </PrimaryButton>
+                        </form> */}
+                        <Link href={route('allottee.logout')} method="post">
+                            <PrimaryButton variant="outline" className="bg-red-700 hover:bg-red-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                                    </svg>
+                                    Log Keluar
+                            </PrimaryButton>
+                        </Link>
                     </div>
 
                 </div>
@@ -87,14 +114,14 @@ export default function Dashboard({ allottee , transactions , year }) {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div>
-                                <PrimaryButton>
+                            {/* <div>
+                                <PrimaryButton onClick={handlePDFDownload} className="bg-blue-700 hover:bg-blue-800">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                     </svg>
                                     Muat Turun PDF
                                 </PrimaryButton>
-                            </div>
+                            </div> */}
                         </div>
                         {loading ? (
                         <div className="animate-pulse">Loading...</div>

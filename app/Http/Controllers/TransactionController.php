@@ -147,6 +147,7 @@ class TransactionController extends Controller
 
     public function transactionDelete(Request $request): RedirectResponse
     {
+        // dd($request->all());
         try {
             DB::beginTransaction();
             

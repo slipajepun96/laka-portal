@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 ini_set('max_execution_time', 300); // 5 minutes
 ini_set('memory_limit', '512M');
@@ -74,6 +76,40 @@ class AllotteeController extends Controller
             'transactions' => $transactions,
             'year' => $year
         ]);
+    }
+
+    public function allotteeStatementDownload(Request $request)
+    {
+        $year = $request->input('year', date('Y'));
+        $allottee = Auth::guard('allottee')->user();
+        
+        $transactions = TransactionList::where('allottee_id', $allottee->id)
+            ->whereYear('transaction_posted_date', $year)
+            ->orderBy('transaction_posted_date')
+            ->get();
+
+        // Calculate running balance
+        $balance = 0;
+        $transactionsWithBalance = $transactions->map(function ($transaction) use (&$balance) {
+            if ($transaction->transaction_type === 'debit') {
+                $balance += floatval($transaction->transaction_amount);
+            } elseif ($transaction->transaction_type === 'credit') {
+                $balance -= floatval($transaction->transaction_amount);
+            }
+            
+            $transaction->running_balance = $balance;
+            return $transaction;
+        });
+
+        // dd($transactionsWithBalance);
+        $pdf = Pdf::loadView('pdf.allottee_statement', [
+            'allottee' => $allottee,
+            'transactions' => $transactionsWithBalance,
+            'year' => $year,
+            'final_balance' => $balance,
+            'generated_date' => now()->format('d/m/Y')
+        ]);
+        return $pdf->download('penyata.pdf');
     }
 
     public function allotteeIndex(Request $request): Response
