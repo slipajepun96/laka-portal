@@ -18,7 +18,6 @@ export default function AuthenticatedLayout({ header, children }) {
             <nav class="bg-gray-900 border-gray-700">
             <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <a href="/dashboard" class="flex items-center space-x-3 rtl:space-x-reverse">
-                    {/* <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> */}
                     <span class="self-center text-2xl font-bold whitespace-nowrap text-white">Portal Laka</span>
                 </a>
                 <button data-collapse-toggle="navbar-dropdown" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm  rounded-lg md:hidden  focus:outline-none focus:ring-2 focus:ring-gray-200 text-gray-400 hover:bg-gray-700 focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
