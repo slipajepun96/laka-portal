@@ -11,13 +11,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/Components/ui/dialog';
-// import { MapContainer, TileLayer, Marker, Circle, useMap } from 'react-leaflet';
-// import 'leaflet/dist/leaflet.css';
-// import 'leaflet-defaulticon-compatibility';
-// import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import { useForm } from '@inertiajs/react';
-// import { Input } from '@/Components/ui/input';
-// import { Label } from '@/Components/ui/label';
 
 
 export default function LotsEditLot({ lot }) {

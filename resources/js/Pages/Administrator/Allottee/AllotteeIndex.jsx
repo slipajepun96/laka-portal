@@ -4,6 +4,7 @@ import DataTable from '@/Components/DataTable';
 import AllotteeAdd from './Partials/AllotteeAdd';
 import LotsEditLot from './Partials/LotsEditLot';
 import AllotteeGenerateDefaultPassword from './Partials/AllotteeGenerateDefaultPassword';
+import AllotteeEdit from './Partials/AllotteeEdit';
 
 export default function AllotteeIndex({ allottees }) {
     // console.log(lots);
@@ -20,13 +21,24 @@ export default function AllotteeIndex({ allottees }) {
                 </div>
             ),
         },
-        { Header: 'No. Telefon', accessor: 'allottee_phone_num' },
+        {
+            Header: 'Butiran',
+            accessor: ['allottee_address', 'allottee_phone_num', 'allottee_email'],
+            Cell: ({ row }) => (
+                <div className="flex flex-col text-sm">
+                    {row.allottee_address}
+                    <div className='text-sm'>{row.allottee_phone_num}</div>
+                    <div className='text-sm'>{row.allottee_email}</div>
+                </div>
+            ),
+        },
+        // { Header: 'No. Telefon', accessor: 'allottee_phone_num' },
         {
             Header: 'Tindakan',
             accessor: 'actions',
             Cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    <LotsEditLot lot={ row }/>
+                    <AllotteeEdit allottee={row} />
                     {/* <button
                         className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                         onClick={() => handleDelete(row.id)}

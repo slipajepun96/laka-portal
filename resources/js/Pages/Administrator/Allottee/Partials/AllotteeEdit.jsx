@@ -21,26 +21,45 @@ import {
 } from "@/Components/ui/select"
 
 
-export default function AllotteeAdd({ }) {
+export default function AllotteeEdit({ allottee }) {
+
+
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        allottee_nric: '',
-        allottee_name: '',
-        allottee_address: '',
-        allottee_phone_num: '',
-        allottee_email: '',
-        allottee_bank_name: '',
-        allottee_bank_acc_num: '',
-        allottee_is_dead: '',
-        allottee_dead_cert_num: '',
+        id: allottee.id || '',
+        allottee_nric: allottee.allottee_nric || '',
+        allottee_name: allottee.allottee_name || '',
+        allottee_address: allottee.allottee_address || '',
+        allottee_phone_num: allottee.allottee_phone_num || '',
+        allottee_email: allottee.allottee_email || '',
+        allottee_bank_name: allottee.allottee_bank_name || '',
+        allottee_bank_acc_num: allottee.allottee_bank_acc_num || '',
+        allottee_is_dead: allottee.allottee_is_dead || '',
+        allottee_dead_cert_num: allottee.allottee_dead_cert_num || '',
     });
+
+    useEffect(() => {
+        setData({
+            id: allottee.id || '',
+            allottee_nric: allottee.allottee_nric || '',
+            allottee_name: allottee.allottee_name || '',
+            allottee_address: allottee.allottee_address || '',
+            allottee_phone_num: allottee.allottee_phone_num || '',
+            allottee_email: allottee.allottee_email || '',
+            allottee_bank_name: allottee.allottee_bank_name || '',
+            allottee_bank_acc_num: allottee.allottee_bank_acc_num || '',
+            allottee_is_dead: allottee.allottee_is_dead || '',
+            allottee_dead_cert_num: allottee.allottee_dead_cert_num || '',
+        });
+    }, [allottee, setData]);
+        // console.log('allottee', data);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const submit = (e) => {
         e.preventDefault();
         console.log('onSuccess', data);
-
-        post(route('allottee.add'), {
+        const scrollY = window.scrollY;
+        post(route('allottee.edit'), {
             onSuccess: () => {
                 reset(
                     'allottee_nric',
@@ -53,9 +72,8 @@ export default function AllotteeAdd({ }) {
                     'allottee_is_dead',
                     'allottee_dead_cert_num',
                 );
-                // Close the dialog
-                console.log('onSuccess', data);
                 setIsDialogOpen(false);
+                setTimeout(() => window.scrollTo(0, scrollY), 0);
             },
         });
     };
@@ -80,12 +98,12 @@ export default function AllotteeAdd({ }) {
         <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
             <DialogTrigger asChild>
                 <PrimaryButton variant="outline" className=''>
-                    Tambah Peserta
+                    Edit
                 </PrimaryButton>
             </DialogTrigger>
             <DialogContent className="max-w-xl">
                 <DialogHeader>
-                    <DialogTitle>Tambah Peserta</DialogTitle>
+                    <DialogTitle>Edit Peserta</DialogTitle>
                     {/* <DialogDescription>
                         Anyone who has this link will be able to view this.
                     </DialogDescription> */}
@@ -101,14 +119,15 @@ export default function AllotteeAdd({ }) {
                                 <TextInput
                                     id="allottee_name"
                                     name="allottee_name"
-                                    value={data.allottee_name}
-                                    className="mt-1 block w-full"
+                                    value={data.allottee_name || ""}
+                                    className="mt-1 block w-full bg-gray-100"
                                     autoComplete="allottee_name"
                                     isFocused={true}
                                     onChange={(e) =>
                                         setData('allottee_name', e.target.value)
                                     }
                                     required
+                                    disabled
                                 />
                                 <InputError
                                     message={errors.allottee_name}
@@ -125,13 +144,14 @@ export default function AllotteeAdd({ }) {
                                         id="allottee_nric"
                                         name="allottee_nric"
                                         value={data.allottee_nric}
-                                        className="mt-1 block w-full"
+                                        className="mt-1 block w-full bg-gray-100"
                                         autoComplete="allottee_nric"
                                         isFocused={true}
                                         onChange={(e) =>
                                             setData('allottee_nric', e.target.value)
                                         }
                                         required
+                                        disabled
                                     />
                                     <InputError
                                         message={errors.allottee_nric}
@@ -215,11 +235,14 @@ export default function AllotteeAdd({ }) {
                                     value="Nama Bank"
                                 />
                                 <Select
+                                    value={data.allottee_bank_name}
                                     onValueChange={(value) =>
                                         setData('allottee_bank_name', value)
                                 }>
                                     <SelectTrigger className="w-[180px] w-full">
-                                        <SelectValue placeholder="Sila pilih bank" />
+                                        <SelectValue placeholder="Sila pilih bank">
+                                            {data.allottee_bank_name ? data.allottee_bank_name : null}
+                                        </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent 
                                         id="allottee_bank_name"

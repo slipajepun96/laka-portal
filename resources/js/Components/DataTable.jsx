@@ -48,7 +48,7 @@ export default function DataTable({ columns, data, className = "", showSearch = 
                             {columns.map((column) => (
                                 <th
                                     key={column.accessor || column.Header}
-                                    className="px-4 py-2 text-left  border-gray-200 bg-white"
+                                    className="px-4 py-2 text-left  border-gray-200 bg-gray-900 text-white"
                                 >
                                     {column.Header}
                                 </th>

@@ -66,7 +66,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             Penyata & Transaksi
                         </NavLink>
                     </li>
-                    <li>
+                    {/* <li>
                         <NavLink
                             href={route('logout')}
                             active={route().current('logout')}
@@ -74,7 +74,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             Tetapan Sistem
                         </NavLink>
-                    </li>
+                    </li> */}
                     <li>
                         <NavLink 
                             href={route('profile.edit')} 

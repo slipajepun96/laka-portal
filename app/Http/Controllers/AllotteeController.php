@@ -161,6 +161,48 @@ class AllotteeController extends Controller
 
     }
 
+    public function allotteeEdit(Request $request): RedirectResponse
+    {
+        // dd($request->all());
+
+        $validatedData = $request->validate([
+            'allottee_nric' => 'required|string|max:12',
+            'allottee_name' => 'required|string|max:255',
+            'allottee_address' => 'nullable|string|max:255',
+            'allottee_phone_num' => 'nullable|numeric',
+            'allottee_email' => 'nullable|string|max:100',
+            'allottee_bank_name' => 'required|string|max:100',
+            'allottee_bank_acc_num' => 'required',
+        ]);
+
+
+        try {
+            $allottee = new Allottee();
+            $allottee = Allottee::find($request->id);
+            $allottee->allottee_nric = $validatedData['allottee_nric'];
+            $allottee->allottee_name = $validatedData['allottee_name'];
+            $allottee->allottee_address = $validatedData['allottee_address'];
+            $allottee->allottee_phone_num = $validatedData['allottee_phone_num'];
+            $allottee->allottee_email = $validatedData['allottee_email'];
+            $allottee->allottee_bank_name = $validatedData['allottee_bank_name'];
+            $allottee->allottee_bank_acc_num = $validatedData['allottee_bank_acc_num'];
+
+            $firstName = explode(' ', $allottee->allottee_name ?? '')[0] ?? '';
+            $nricNumbers = substr($allottee->allottee_nric ?? '', 6, 6);
+            $allottee->password = bcrypt($firstName . $nricNumbers);
+
+            $allottee->save();
+
+
+
+            return redirect()->route('allottee.index')->with('success', 'Peserta berjaya ditambah');
+        } catch (\Exception $e) {
+            // Handle any unexpected errors
+            return redirect()->back()->withErrors(['error' => 'An error occurred while adding the location. Please try again.']);
+        }
+
+    }
+
     public function allotteeGenerateDefaultPassword(Request $request): RedirectResponse
     {
         $allottees = Allottee::all();

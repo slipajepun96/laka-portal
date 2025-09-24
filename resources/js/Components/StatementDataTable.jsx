@@ -85,11 +85,11 @@ export default function StatementDataTable({ columns, data, className = "", show
                         <tr>
                             <td
                                 colSpan={columns.length - 1}
-                                className="px-4 py-2 text-right text-lg uppercase font-bold"
+                                className="px-4 py-2 text-right text-lg uppercase font-bold bg-gray-900 text-white"
                             >
                                 Jumlah
                             </td>
-                            <td className="px-4 py-2 text-lg uppercase font-bold text-right">
+                            <td className="px-4 py-2 text-lg uppercase font-bold text-right bg-gray-900 text-white">
                                 RM {parseFloat(filteredData.reduce((acc, row) => {
                                     if (row.transaction_type === 'debit') {
                                         acc += parseFloat(row.transaction_amount || 0);

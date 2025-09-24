@@ -20,7 +20,7 @@ class TransactionController extends Controller
 {
     public function transactionIndex(): Response
     {
-        $transactions = Transaction::all();
+        $transactions = Transaction::orderByDesc('transaction_posted_date')->get();
         // dd($transactions);
 
         return Inertia::render('Administrator/Transaction/TransactionIndex', [
@@ -56,7 +56,7 @@ class TransactionController extends Controller
             $validated = $request->validate([
                 'transaction_name' => 'required|string',
                 'transaction_posted_date' => 'required|date',
-                'transaction_type' => 'required|string|in:debit,credit,notice',
+                'transaction_type' => 'required|string|in:debit,credit,balance',
                 'transactions' => 'required|array',
                 // 'transactions.*.lot_id' => 'required|exists:lots,id',
                 // 'transactions.*.allottee_id' => 'required|exists:allottees,id',
