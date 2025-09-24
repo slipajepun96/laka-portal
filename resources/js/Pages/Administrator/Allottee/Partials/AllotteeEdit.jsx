@@ -336,7 +336,7 @@ export default function AllotteeEdit({ allottee }) {
                             </div>
                         </div>
                         <PrimaryButton disabled={processing}>
-                            Tambah
+                            Simpan
                         </PrimaryButton>
                     </div>
                 </form>
