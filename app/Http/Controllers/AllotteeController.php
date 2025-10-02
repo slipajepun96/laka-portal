@@ -171,8 +171,8 @@ class AllotteeController extends Controller
             'allottee_address' => 'nullable|string|max:255',
             'allottee_phone_num' => 'nullable|numeric',
             'allottee_email' => 'nullable|string|max:100',
-            'allottee_bank_name' => 'required|string|max:100',
-            'allottee_bank_acc_num' => 'required',
+            'allottee_bank_name' => 'nullable|string|max:100',
+            'allottee_bank_acc_num' => 'nullable',
         ]);
 
 
