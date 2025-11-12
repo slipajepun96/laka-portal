@@ -30,6 +30,9 @@ class LotController extends Controller
             return $lot;
         });
 
+        // Sort lots by lot_num
+        $lots = $lots->sortBy('lot_num')->values();
+
         $lot_owner = Ownership::orderBy('lot_id')->get()->toArray();
 
         $allottees = Allottee::orderBy('allottee_name')->get()->toArray();

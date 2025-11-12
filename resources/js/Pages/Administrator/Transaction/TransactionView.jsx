@@ -155,10 +155,15 @@ export default function TransactionView({ transaction, transaction_lists }) {
             Header: 'Amaun (RM)',
             accessor: 'id',
             Cell: ({ row }) => (
-                <div>RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            })}</div>
+                <div>
+                    {row.transaction_amount && !isNaN(parseFloat(row.transaction_amount)) 
+                        ? `RM ${parseFloat(row.transaction_amount).toLocaleString('ms-MY', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}`
+                        : '-'
+                    }
+                </div>
             )
         }
     ];

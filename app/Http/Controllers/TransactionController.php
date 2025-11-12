@@ -11,6 +11,7 @@ use App\Models\TransactionList;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\LotsImport;
 use Illuminate\Support\Str;
+use DateTime;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -62,12 +63,6 @@ class TransactionController extends Controller
                 // 'transactions.*.allottee_id' => 'required|exists:allottees,id',
                 // 'transactions.*.amount' => 'required|numeric|min:0',
             ]);
-
-            // dd($validated);
-            // \Log::info('Transaction request:', [
-            //     'data' => $request->all(),
-            //     'validation_passed' => true
-            // ]);
 
             DB::beginTransaction();
             try {
@@ -234,5 +229,168 @@ class TransactionController extends Controller
         }
         $transaction = Transaction::all()->where('id', $transactionId)->first();
 
+    }
+
+    public function transactionViewAddCFBF(): Response
+    {
+        $lots = Lot::with(['ownerships' => function($q) {
+            $q->orderByDesc('ownership_start_date'); // or 'created_at'
+        }, 'ownerships.allottee'])->get();
+
+        // Add latest allottee name to each lot
+        $lots = $lots->map(function($lot) {
+            $latestOwnership = $lot->ownerships->first();
+            $lot->latest_allottee_name = $latestOwnership?->allottee?->allottee_name ?? "-";
+            $lot->latest_allottee_nric = $latestOwnership?->allottee?->allottee_nric ?? "-";
+            $lot->latest_allottee_id = $latestOwnership?->allottee?->id ?? "-";
+            return $lot;
+        });
+
+        //sort lot by allottee name
+        $lots = $lots->sortBy(function($lot) {
+            return $lot->latest_allottee_name;
+        })->values();
+
+        // dd($lots[3]);
+        return Inertia::render('Administrator/Transaction/TransactionAddCFBFTransaction', [
+            'lots' => $lots,
+            // 'allottees' => $allottees,
+        ]);
+    }
+
+    public function transactionSaveCFBF(Request $request): RedirectResponse
+    {
+        try {
+            $validated = $request->validate([
+                'cf_year' => 'required|numeric',
+                'bf_year' => 'required|numeric',
+                'transactions' => 'required|array',
+            ]);
+
+            // dd($validated['cf_year'] . "-12-31");
+            DB::beginTransaction();
+            try {
+                //init declare
+                $cf_transaction_posted_date = $validated['cf_year'] . "-12-31";//ymd
+                $bf_transaction_posted_date = $validated['bf_year'] . "-01-01";//ymd
+
+
+                //untuk cf year
+
+                // save ibu transaction dulu
+                $transaction = new Transaction();
+                $transaction->transaction_name = "Carry Forward Tahun " . $validated['cf_year'];
+                $transaction->transaction_posted_date = $cf_transaction_posted_date;
+                $transaction->transaction_type = "carry_forward";
+                $transaction->save();
+
+                $transaction_id = $transaction->id; 
+                $transaction_list_all = [];
+
+                foreach($validated['transactions'] as $transaction_list) 
+                {
+                    if(
+                        isset($transaction_list['allottee_id']) &&
+                        !empty($transaction_list['allottee_id']) &&
+                        $transaction_list['allottee_id'] !== '-')
+                    {
+                        // //debug 
+                        // dd("test");
+
+                        $transaction_list_all[] = [
+                            'id' => Str::uuid(),
+                            'lot_id' => $transaction_list['lot_id'],
+                            'allottee_id' => $transaction_list['allottee_id'],
+                            'transaction_id' => $transaction_id,
+                            'transaction_type' => "carry_forward",
+                            'transaction_name' => "Carry Forward Tahun " . $validated['cf_year'],
+                            'transaction_posted_date' => $cf_transaction_posted_date,
+                            'transaction_amount' => $transaction_list['amount'],
+                            'year' => $validated['cf_year'],
+                            'created_at' => now(),
+                            // 'updated_at' => now()
+                        ];
+                        // dd($transaction_list_all);
+
+                    }
+                }
+
+                // dd($transaction_list_all);
+                if (!empty($transaction_list_all)) {
+                    TransactionList::insert($transaction_list_all);
+                }
+
+
+                //untuk BF year========================================================================
+
+                // save ibu transaction dulu
+                $transaction = new Transaction();
+                $transaction->transaction_name = "Brought Forward Tahun " . $validated['bf_year'];
+                $transaction->transaction_posted_date = $bf_transaction_posted_date;
+                $transaction->transaction_type = "brought_forward";
+                $transaction->save();
+
+                $transaction_id = '';
+
+                $transaction_id = $transaction->id; 
+                $transaction_list_all = [];
+
+                foreach($validated['transactions'] as $transaction_list) 
+                {
+                    if(
+                        isset($transaction_list['allottee_id']) &&
+                        !empty($transaction_list['allottee_id']) &&
+                        $transaction_list['allottee_id'] !== '-')
+                    {
+                        // //debug 
+                        // dd("test");
+
+                        $transaction_list_all[] = [
+                            'id' => Str::uuid(),
+                            'lot_id' => $transaction_list['lot_id'],
+                            'allottee_id' => $transaction_list['allottee_id'],
+                            'transaction_id' => $transaction_id,
+                            'transaction_type' => "brought_forward",
+                            'transaction_name' => "Brought Forward Tahun " . $validated['bf_year'],
+                            'transaction_posted_date' => $bf_transaction_posted_date,
+                            'transaction_amount' => $transaction_list['amount'],
+                            'year' => $validated['bf_year'],
+                            'created_at' => now(),
+                            // 'updated_at' => now()
+                        ];
+                        // dd($transaction_list_all);
+
+                    }
+                }
+
+                // dd($transaction_list_all);
+                if (!empty($transaction_list_all)) {
+                    TransactionList::insert($transaction_list_all);
+                }
+
+                DB::commit();
+                return redirect()->route('transaction.index')->with('success', 'Transaksi berjaya disimpan');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Database error:', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                return redirect()->back()
+                    ->with('error', 'Failed to save transactions')
+                    ->withErrors(['database' => $e->getMessage()]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Validation/Processing error:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            dd($e->getMessage());
+            return redirect()->back()
+                ->withErrors(['error' => $e->getMessage()])
+                ->with('error', 'An error occurred while processing the transactions')
+                ->withInput();
+        }
     }
 }

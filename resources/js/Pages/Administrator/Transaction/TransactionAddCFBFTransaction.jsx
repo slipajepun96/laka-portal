@@ -2,14 +2,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
 // import TransactionAddTransaction from './Partials/TransactionAddTransaction';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu"
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
@@ -29,37 +21,48 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { constructFromSymbol } from 'date-fns/constants';
 
-export default function TransactionAddBulkTransaction({ lots }) {
+export default function TransactionCFBFTransaction({ lots }) {
     // console.log(lots);
     const { data, setData, post, processing, errors, reset } = useForm({
-        transaction_name: '',
-        transaction_posted_date: '',
-        transaction_type: '',
+        cf_year: '',
+        bf_year: '',
+        // transaction_type: '',
         transactions: [], 
     });
 
-    const [date, setDate] = useState();
     const [open, setOpen] = useState(false);
     const [rowAmounts, setRowAmounts] = useState({});
     const [shouldSubmit, setShouldSubmit] = useState(false);
+    const [date, setDate] = useState();
+    const [excludedLots, setExcludedLots] = useState(new Set());
 
+    const totalAmount = Object.values(rowAmounts).map(Number).reduce((sum, val) => sum + (isNaN(val) ? 0 : val), 0);
 
+    // Filter out excluded lots
+    const availableLots = lots.filter(lot => !excludedLots.has(lot.id));
 
-    const totalAmount = Object.values(rowAmounts)
-    .map(Number)
-    .reduce((sum, val) => sum + (isNaN(val) ? 0 : val), 0);
+    // Function to remove a lot from the list
+    const removeLot = (lotId) => {
+        setExcludedLots(prev => new Set([...prev, lotId]));
+        // Also remove the amount for this lot
+        setRowAmounts(prev => {
+            const updated = { ...prev };
+            delete updated[lotId];
+            return updated;
+        });
+    };
 
     // Add useEffect to handle the actual submission
     useEffect(() => {
         if (shouldSubmit) {
             // Reset the flag first
             setShouldSubmit(false);
+            console.log('Form data being submitted:', data);
             
-            // Now post the data
-            post(route('transaction.save-bulk'), {
-                transaction_name: data.transaction_name,
-                transaction_posted_date: data.transaction_posted_date,
-                transaction_type: data.transaction_type,
+            post(route('transaction.save-cfbf'), {
+                // transaction_name: data.transaction_name,
+                cf_year: data.cf_year,
+                bf_year: data.bf_year,
                 transactions: data.transactions
             }, {
                 preserveScroll: true,
@@ -71,7 +74,6 @@ export default function TransactionAddBulkTransaction({ lots }) {
                 onSuccess: () => {
                     reset();
                     setRowAmounts({});
-                    setDate(undefined);
                 },
             });
         }
@@ -80,8 +82,10 @@ export default function TransactionAddBulkTransaction({ lots }) {
     const submit = (e) => {
         e.preventDefault();
 
+        console.log('Submitting form with data:', data);
 
-        const transactions = lots.map(lot => ({
+
+        const transactions = availableLots.map(lot => ({
             lot_id: lot.id,
             allottee_id: lot.latest_allottee_id,
             amount: parseFloat(rowAmounts[lot.id]) || "",
@@ -90,25 +94,36 @@ export default function TransactionAddBulkTransaction({ lots }) {
 
         setData(prev => ({
             ...prev,
-            transaction_posted_date: date ? format(date, 'yyyy-MM-dd') : '',
+            // transaction_posted_date: date ? format(date, 'yyyy-MM-dd') : '',
             transactions: transactions
         }));
+        console.log(transactions);
 
         // Set flag to trigger submission
         setShouldSubmit(true);
     };
 
-    // yg lama
     const columns = [
         { Header: 'No. Lot', accessor: 'lot_num' },
         {   Header: 'Nama Peserta/Pentadbir',
             accessor: ['latest_allottee_name', 'latest_allottee_nric'],
             Cell: ({ row }) => (
-                <div className="flex flex-col space-x-2">
-                    {row.latest_allottee_name}
-                    <div className='text-sm'>{row.latest_allottee_nric}</div> 
-                                    {/* {row.id} */}
-                    {/* <div className='text-sm'>{row.id}</div>  */}
+                <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                        {row.latest_allottee_name}
+                        <div className='text-sm'>{row.latest_allottee_nric}</div> 
+                    </div>
+                    <PrimaryButton
+                        type="button"
+                        onClick={() => removeLot(row.id)}
+                        className="ml-2 bg-red-600 hover:bg-red-800 focus:bg-red-500 focus:outline-none"
+                        title="Remove from list"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Buang
+                    </PrimaryButton>
                 </div>
             ),
          },
@@ -134,7 +149,7 @@ export default function TransactionAddBulkTransaction({ lots }) {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Tambah Transaksi Pukal
+                    Tambah Transaksi Brought Forward / Carried Forward
                 </h2>
             }
         >
@@ -146,91 +161,52 @@ export default function TransactionAddBulkTransaction({ lots }) {
                     </div>
                 <form onSubmit={submit}>
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2">
-                        <div className='mb-2'>
-                            <InputLabel
-                                htmlFor="transaction_name"
-                                value="Nama Transaksi"
-                            />
-                            <TextInput
-                                id="transaction_name"
-                                name="transaction_name"
-                                value={data.transaction_name}
-                                className="mt-1 block w-full"
-                                isFocused={false}
-                                onChange={(e) =>
-                                    setData(
-                                        'transaction_name',
-                                        e.target.value,
-                                    )
-                                }
-                                required
-                            />
-                            <InputError
-                                message={errors.transaction_name}
-                                className="mt-2"
-                            />
-                        </div>
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                            <div>
+                            <div className='mb-2'>
                                 <InputLabel
-                                    htmlFor="transaction_posted_date"
-                                    value="Tarikh Transaksi"
+                                    htmlFor="cf_year"
+                                    value="Tahun Carry Forward (Akhir Tahun)"
                                 />
-                                <Popover open={open} onOpenChange={setOpen} modal={false}>
-                                    <PopoverTrigger asChild>
-                                        <button
-                                            type="button"
-                                            className={cn(
-                                                "w-full text-left font-normal bg-white border rounded-md px-3 py-2",
-                                                !date && "text-muted-foreground"
-                                            )}
-                                        >
-                                            {date ? format(date, "dd-MM-yyyy") : "Pilih tarikh transaksi"}
-                                        </button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" trapFocus={false}>
-                                        <Calendar
-                                            mode="single"
-                                            selected={date}
-                                            onSelect={selectedDate => {
-                                                setDate(selectedDate);
-                                                setData('transaction_posted_date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
-                                                setOpen(false);
-                                            }}
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
+                                <TextInput
+                                    id="cf_year"
+                                    name="cf_year"
+                                    value={data.cf_year}
+                                    className="mt-1 block w-full"
+                                    isFocused={false}
+                                    onChange={(e) =>
+                                        setData(
+                                            'cf_year',
+                                            e.target.value,
+                                        )
+                                    }
+                                    required
+                                />
                                 <InputError
-                                    message={errors.transaction_posted_date}
+                                    message={errors.cf_year}
                                     className="mt-2"
                                 />
                             </div>
-                            {/* {data.transaction_posted_date} */}
-                            <div>
+                            <div className='mb-2'>
                                 <InputLabel
-                                    htmlFor="transaction_type"
-                                    value="Jenis Transaksi"
-                                    className='mb-1'
+                                    htmlFor="bf_year"
+                                    value="Tahun Brought Forward (Awal Tahun)"
                                 />
-                                <Select
-                                    onValueChange={(value) =>
-                                        setData('transaction_type', value)
-                                }>
-                                    <SelectTrigger className=" w-full">
-                                        <SelectValue placeholder="Sila pilih jenis transaksi" />
-                                    </SelectTrigger>
-                                    <SelectContent 
-                                        id="transaction_type"
-                                        name="transaction_type"
-                                    >
-                                        <SelectItem value="debit">Debit</SelectItem>
-                                        <SelectItem value="credit">Kredit</SelectItem>
-                                        <SelectItem value="notice">Notis/Makluman</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <TextInput
+                                    id="bf_year"
+                                    name="bf_year"
+                                    value={data.bf_year}
+                                    className="mt-1 block w-full"
+                                    isFocused={false}
+                                    onChange={(e) =>
+                                        setData(
+                                            'bf_year',
+                                            e.target.value,
+                                        )
+                                    }
+                                    required
+                                />
                                 <InputError
-                                    // message={errors.allottee_bank_name}
+                                    message={errors.bf_year}
                                     className="mt-2"
                                 />
                             </div>
@@ -247,9 +223,9 @@ export default function TransactionAddBulkTransaction({ lots }) {
                                     className="mt-1 block w-full"
                                     onChange={e => {
                                         const value = e.target.value;
-                                        // Set the same value for all lot IDs
+                                        // Set the same value for all available lot IDs (excluding removed ones)
                                         const newAmounts = {};
-                                        lots.forEach(lot => {
+                                        availableLots.forEach(lot => {
                                             newAmounts[lot.id] = value;
                                         });
                                         setRowAmounts(newAmounts);
@@ -263,11 +239,15 @@ export default function TransactionAddBulkTransaction({ lots }) {
                             <div className=" font-bold text-lg">
                                 Jumlah Amaun: RM {totalAmount.toLocaleString('ms-MY', { minimumFractionDigits: 2 })}
                             </div>
+                                                    <PrimaryButton disabled={processing}>
+                            Simpan 
+                        </PrimaryButton>
                         </div>
+
                     </div>
 
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2 mt-2">
-                        <DataTable columns={columns} data={lots} />
+                        <DataTable columns={columns} data={availableLots} />
                     </div>
 
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2 my-2">

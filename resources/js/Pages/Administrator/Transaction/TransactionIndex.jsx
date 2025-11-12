@@ -91,11 +91,20 @@ export default function TransactionIndex({ transactions, allottees }) {
                         <Link
                             href={route('transaction.add-bulk')}
                         >
-                        <PrimaryButton variant="outline" className="bg-green-700 hover:bg-green-800">
-                            <Plus strokeWidth={2.25} />
-                            Transaksi Pukal
-                        </PrimaryButton>
+                            <PrimaryButton variant="outline" className="bg-green-700 hover:bg-green-800">
+                                <Plus strokeWidth={2.25} />
+                                Transaksi Pukal
+                            </PrimaryButton>
                         </Link>
+                        <Link
+                            href={route('transaction.add-cfbf')}
+                        >
+                            <PrimaryButton variant="outline" className="bg-green-700 hover:bg-green-800">
+                                <Plus strokeWidth={2.25} />
+                                Transaksi Brought Forward / Carried Forward
+                            </PrimaryButton>
+                        </Link>
+
                     </div>
                     {flash?.message && flash.message.trim() !== '' && (
                         <Alert 

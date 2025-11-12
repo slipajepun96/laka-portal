@@ -27,8 +27,10 @@ export default function AllotteeStatementView({ transactions, year }) {
         Header: 'Transaksi',
         accessor: 'transaction_name',
         Cell: ({ row }) => {
-                    // Calculate balance outside of JSX
+            // Calculate balance outside of JSX
             if (row.transaction_type === 'debit') {
+                balance += parseFloat(row.transaction_amount || 0);
+            } else if (row.transaction_type === 'brought_forward' || row.transaction_type === 'carry_forward') {
                 balance += parseFloat(row.transaction_amount || 0);
             } else if (row.transaction_type === 'credit') {
                 balance -= parseFloat(row.transaction_amount || 0);
@@ -46,28 +48,35 @@ export default function AllotteeStatementView({ transactions, year }) {
                     
                     {/* Debit/Credit Row */}
                     <div className="grid grid-cols-2 gap-4 text-md">
-                        <div>
-                            <span className="text-gray-600">Debit: </span>
-                            {row.transaction_type === 'debit' ? (
-                                <span className='text-green-500 md:text-lg font-black text-right'>
-                                    RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    })}
-                                </span>
-                            ) : '-'}
-                        </div>
-                        <div>
-                            <span className="text-gray-600">Kredit: </span>
-                            {row.transaction_type === 'credit' ? (
-                                <span className='text-red-500 md:text-lg font-bold text-right'>
-                                    RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    })}
-                                </span>
-                            ) : '-'}
-                        </div>
+                        {row.transaction_type === 'brought_forward' || row.transaction_type === 'carry_forward' ? (
+                            <div>
+                                <div>
+                                    <span className="text-gray-600">Debit: </span>
+                                    {row.transaction_type === 'debit' ? (
+                                        <span className='text-green-500 md:text-lg font-black text-right'>
+                                            RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            })}
+                                        </span>
+                                    ) : '-'}
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">Kredit: </span>
+                                    {row.transaction_type === 'credit' ? (
+                                        <span className='text-red-500 md:text-lg font-bold text-right'>
+                                            RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            })}
+                                        </span>
+                                    ) : '-'}
+                                </div>
+                            </div>
+
+                        
+                        ) : '-' }
+
                     </div>
                 </div>
             );
@@ -91,7 +100,7 @@ export default function AllotteeStatementView({ transactions, year }) {
     return (
         <div className='w-full max-w-7xl'>
 
-            <p className='text-lg font-semibold'>Penyata Transaksi Peserta RTK Paya Laka {year} </p>
+            <p className='text-lg font-semibold'>Penyata Transaksi  {year} </p>
             <StatementDataTable columns={columns} data={transactions} className="overflow-hidden " showSearch={false} />
             <p className='text-sm text-gray-500 my-4'>
                 <b>Nota:</b> Penyata ini mungkin mengandungi kesilapan. Sekiranya terdapat sebarang kesilapan atau pertanyaan mengenai penyata ini, sila hubungi PKPP Agro Sdn. Bhd. di talian 011-26637117.

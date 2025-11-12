@@ -41,6 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/transaction', [TransactionController::class, 'transactionIndex'])->name('transaction.index');
     Route::get('/transaction/add-bulk', [TransactionController::class, 'transactionViewAddBulk'])->name('transaction.add-bulk');
     Route::post('/transaction/save-bulk', [TransactionController::class, 'transactionSaveBulk'])->name('transaction.save-bulk');
+    Route::get('/transaction/add-cfbf', [TransactionController::class, 'transactionViewAddCFBF'])->name('transaction.add-cfbf');
+    Route::post('/transaction/save-cfbf', [TransactionController::class, 'transactionSaveCFBF'])->name('transaction.save-cfbf');
     Route::post('/transaction/delete', [TransactionController::class, 'transactionDelete'])->name('transaction.delete');
     Route::get('/transaction/view/{transaction}', [TransactionController::class, 'transactionView'])->name('transaction.view');
 });
