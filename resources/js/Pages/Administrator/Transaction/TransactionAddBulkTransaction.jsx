@@ -42,6 +42,7 @@ export default function TransactionAddBulkTransaction({ lots }) {
     const [open, setOpen] = useState(false);
     const [rowAmounts, setRowAmounts] = useState({});
     const [shouldSubmit, setShouldSubmit] = useState(false);
+    const [filteredLots, setFilteredLots] = useState(lots);
 
 
 
@@ -80,8 +81,9 @@ export default function TransactionAddBulkTransaction({ lots }) {
     const submit = (e) => {
         e.preventDefault();
 
+        // console.log(filteredLots);
 
-        const transactions = lots.map(lot => ({
+        const transactions = filteredLots.map(lot => ({
             lot_id: lot.id,
             allottee_id: lot.latest_allottee_id,
             amount: parseFloat(rowAmounts[lot.id]) || "",
@@ -96,6 +98,16 @@ export default function TransactionAddBulkTransaction({ lots }) {
 
         // Set flag to trigger submission
         setShouldSubmit(true);
+    };
+
+    const handleRemoveRow = (lotId) => {
+        setFilteredLots(prev => prev.filter(lot => lot.id !== lotId));
+        // Also remove the amount for this lot
+        setRowAmounts(prev => {
+            const newAmounts = { ...prev };
+            delete newAmounts[lotId];
+            return newAmounts;
+        });
     };
 
     // yg lama
@@ -126,6 +138,19 @@ export default function TransactionAddBulkTransaction({ lots }) {
                     onChange={e => setRowAmounts(prev => ({ ...prev, [row.id]: e.target.value }))}
                     
                 />
+            ),
+        },
+        {
+            Header: 'Tindakan',
+            accessor: 'actions',
+            Cell: ({ row }) => (
+                <button
+                    type="button"
+                    onClick={() => handleRemoveRow(row.id)}
+                    className="px-3 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+                >
+                    Buang
+                </button>
             ),
         },
     ];
@@ -249,7 +274,7 @@ export default function TransactionAddBulkTransaction({ lots }) {
                                         const value = e.target.value;
                                         // Set the same value for all lot IDs
                                         const newAmounts = {};
-                                        lots.forEach(lot => {
+                                        filteredLots.forEach(lot => {
                                             newAmounts[lot.id] = value;
                                         });
                                         setRowAmounts(newAmounts);
@@ -267,7 +292,7 @@ export default function TransactionAddBulkTransaction({ lots }) {
                     </div>
 
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2 mt-2">
-                        <DataTable columns={columns} data={lots} />
+                        <DataTable columns={columns} data={filteredLots} />
                     </div>
 
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2 my-2">

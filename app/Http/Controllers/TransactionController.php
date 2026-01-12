@@ -53,6 +53,7 @@ class TransactionController extends Controller
 
     public function transactionSaveBulk(Request $request): RedirectResponse
     {
+        // dd("test");
         try {
             $validated = $request->validate([
                 'transaction_name' => 'required|string',
@@ -63,6 +64,7 @@ class TransactionController extends Controller
                 // 'transactions.*.allottee_id' => 'required|exists:allottees,id',
                 // 'transactions.*.amount' => 'required|numeric|min:0',
             ]);
+            
 
             DB::beginTransaction();
             try {

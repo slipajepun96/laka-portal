@@ -27,7 +27,6 @@ export default function Dashboard({ allottee , transactions , year }) {
         setSelectedYear(newYear);
         setLoading(true);
 
-        // Use Inertia.reload() with only specific props
         router.reload({
             data: { year: newYear },
             only: ['transactions'], // Only reload transactions prop
