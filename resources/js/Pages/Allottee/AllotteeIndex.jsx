@@ -108,8 +108,8 @@ export default function Dashboard({ allottee , transactions , year }) {
                                         id="year"
                                         name="year"
                                     >
+                                        <SelectItem value="2026">2026</SelectItem>
                                         <SelectItem value="2025">2025</SelectItem>
-                                        <SelectItem value="2024">2024</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

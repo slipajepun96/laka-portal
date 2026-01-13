@@ -90,17 +90,21 @@ export default function StatementDataTable({ columns, data, className = "", show
                                 Jumlah
                             </td>
                             <td className="px-4 py-2 text-lg uppercase font-bold text-right bg-gray-900 text-white">
-                                RM {parseFloat(filteredData.reduce((acc, row) => {
-                                    if (row.transaction_type === 'debit') {
-                                        acc += parseFloat(row.transaction_amount || 0);
-                                    } else if (row.transaction_type === 'credit') {
-                                        acc -= parseFloat(row.transaction_amount || 0);
-                                    }
-                                    return acc;
-                                }, 0)).toLocaleString('ms-MY', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                })}</td>
+                                RM {(() => {
+                                    let balance = 0;
+                                    filteredData.forEach(row => {
+                                        if (row.transaction_type === 'debit' || row.transaction_type === 'brought_forward' || row.transaction_type === 'carry_forward') {
+                                            balance += parseFloat(row.transaction_amount || 0);
+                                        } else if (row.transaction_type === 'credit') {
+                                            balance -= parseFloat(row.transaction_amount || 0);
+                                        }
+                                    });
+                                    return balance.toLocaleString('ms-MY', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    });
+                                })()}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
