@@ -2,6 +2,16 @@ import React, { useState } from 'react';
 
 export default function DataTable({ columns, data, className = "", showSearch = true }) {
     const [search, setSearch] = useState('');
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+    // Sorting function
+    const handleSort = (accessor) => {
+        let direction = 'asc';
+        if (sortConfig.key === accessor && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key: accessor, direction });
+    };
 
     // Filter data based on search input
     const filteredData = data.filter((row) =>
@@ -21,6 +31,35 @@ export default function DataTable({ columns, data, className = "", showSearch = 
         })
     );
 
+    // Sort data
+    const sortedData = React.useMemo(() => {
+        if (!sortConfig.key) return filteredData;
+
+        return [...filteredData].sort((a, b) => {
+            const aValue = a[sortConfig.key];
+            const bValue = b[sortConfig.key];
+
+            if (aValue === null || aValue === undefined) return 1;
+            if (bValue === null || bValue === undefined) return -1;
+
+            // Check if values are numbers
+            const aNum = Number(aValue);
+            const bNum = Number(bValue);
+            
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return sortConfig.direction === 'asc' ? aNum - bNum : bNum - aNum;
+            }
+
+            // String comparison
+            const aStr = aValue.toString().toLowerCase();
+            const bStr = bValue.toString().toLowerCase();
+            
+            if (aStr < bStr) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    }, [filteredData, sortConfig]);
+
     return (
         <div className={className}>
             {/* Search Input */}
@@ -38,7 +77,7 @@ export default function DataTable({ columns, data, className = "", showSearch = 
 
             {/* Table */}
             <div className="mt-4 text-sm text-gray-600">
-                Menunjukkan {filteredData.length} daripada {data.length} baris.
+                Menunjukkan {sortedData.length} daripada {data.length} baris.
             </div>
             
             <div className="overflow-x-auto">
@@ -48,15 +87,27 @@ export default function DataTable({ columns, data, className = "", showSearch = 
                             {columns.map((column) => (
                                 <th
                                     key={column.accessor || column.Header}
-                                    className="px-4 py-2 text-left  border-gray-200 bg-gray-900 text-white"
+                                    className={`px-4 py-2 text-left border-gray-200 bg-gray-900 text-white ${
+                                        column.sortable ? 'cursor-pointer select-none hover:bg-gray-800' : ''
+                                    }`}
+                                    onClick={() => column.sortable && handleSort(column.accessor)}
                                 >
-                                    {column.Header}
+                                    <div className="flex items-center gap-2">
+                                        {column.Header}
+                                        {column.sortable && (
+                                            <span className="text-xs">
+                                                {sortConfig.key === column.accessor ? (
+                                                    sortConfig.direction === 'asc' ? '▲' : '▼'
+                                                ) : '⇅'}
+                                            </span>
+                                        )}
+                                    </div>
                                 </th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredData.map((row, rowIndex) => (
+                        {sortedData.map((row, rowIndex) => (
                             <tr key={rowIndex} className="hover:bg-gray-50">
                                 {columns.map((column) => (
                                     <td
@@ -71,7 +122,7 @@ export default function DataTable({ columns, data, className = "", showSearch = 
                                 ))}
                             </tr>
                         ))}
-                        {filteredData.length === 0 && (
+                        {sortedData.length === 0 && (
                             <tr>
                                 <td
                                     colSpan={columns.length}

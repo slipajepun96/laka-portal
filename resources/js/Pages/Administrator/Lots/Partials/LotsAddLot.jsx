@@ -178,30 +178,6 @@ export default function LotsAddLot({ }) {
                                 </div>
                                 
                             <div>
-                                <InputLabel
-                                    htmlFor="lot_current_administrator_uuid"
-                                    value="Pentadbir Lot Terkini"
-                                />
-                                <TextInput
-                                    id="lot_current_administrator_uuid"
-                                    name="lot_current_administrator_uuid"
-                                    value={data.location_radius}
-                                    className="mt-1 block w-full"
-                                    autoComplete="lot_current_administrator_uuid"
-                                    isFocused={true}
-                                    onChange={(e) =>
-                                        setData(
-                                            'lot_current_administrator_uuid',
-                                            parseInt(e.target.value),
-                                        )
-                                    }
-                                />
-                                <InputError
-                                    message={errors.lot_current_administrator_uuid}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div>
                                 {/* <MapContainer
                                     center={position}
                                     zoom={15}

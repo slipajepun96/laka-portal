@@ -112,9 +112,10 @@ export default function TransactionAddBulkTransaction({ lots }) {
 
     // yg lama
     const columns = [
-        { Header: 'No. Lot', accessor: 'lot_num' },
+        { Header: 'No. Lot', accessor: 'lot_num', sortable: true },
         {   Header: 'Nama Peserta/Pentadbir',
-            accessor: ['latest_allottee_name', 'latest_allottee_nric'],
+            accessor: 'latest_allottee_name',
+            sortable: true,
             Cell: ({ row }) => (
                 <div className="flex flex-col space-x-2">
                     {row.latest_allottee_name}

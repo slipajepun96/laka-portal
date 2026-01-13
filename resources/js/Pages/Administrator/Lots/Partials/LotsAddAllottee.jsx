@@ -136,33 +136,6 @@ export default function LotsAddAllottee({ allottees, lot }) {
                                         </div>
                                         <InputError message={errors.allottee_id} className="mt-2" />
                                     </div>
-                                    <div>
-                                        <InputLabel
-                                            htmlFor="ownership_type"
-                                            value="Jenis Pemilikan"
-                                        />
-                                        <Select
-                                            onValueChange={(value) =>
-                                                setData('ownership_type', value)
-                                        }
-                                        required>
-                                            <SelectTrigger className="w-[180px] w-full">
-                                                <SelectValue placeholder="-Sila pilih jenis pemilikan-" />
-                                            </SelectTrigger>
-                                            <SelectContent 
-                                                id="ownership_type"
-                                                name="ownership_type"
-                                                
-                                            >
-                                                <SelectItem value="allottee">Peserta RTK</SelectItem>
-                                                <SelectItem value="temporary_admin">Pentadbir Sementara</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <InputError
-                                            message={errors.ownership_type}
-                                            className="mt-2"
-                                        />
-                                    </div> 
                                     {/* <input type="text" id="lot_id" name="lot_id" value={lot.id} /> */}
                                 </div>
                                 <PrimaryButton disabled={processing}>

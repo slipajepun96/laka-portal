@@ -214,7 +214,7 @@ export default function LotsEditLot({ lot }) {
                                     />
                                 </div>
                                 
-                            <div>
+                            {/* <div>
                                 <InputLabel
                                     htmlFor="lot_current_administrator_uuid"
                                     value="Pentadbir Lot Terkini"
@@ -237,7 +237,7 @@ export default function LotsEditLot({ lot }) {
                                     message={errors.lot_current_administrator_uuid}
                                     className="mt-2"
                                 />
-                            </div>
+                            </div> */}
                             <div>
                                 {/* <MapContainer
                                     center={position}

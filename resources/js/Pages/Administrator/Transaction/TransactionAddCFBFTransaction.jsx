@@ -104,9 +104,10 @@ export default function TransactionCFBFTransaction({ lots }) {
     };
 
     const columns = [
-        { Header: 'No. Lot', accessor: 'lot_num' },
+        { Header: 'No. Lot', accessor: 'lot_num', sortable: true },
         {   Header: 'Nama Peserta/Pentadbir',
-            accessor: ['latest_allottee_name', 'latest_allottee_nric'],
+            accessor: 'latest_allottee_name',
+            sortable: true,
             Cell: ({ row }) => (
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col">
