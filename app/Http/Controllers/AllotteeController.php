@@ -48,24 +48,24 @@ class AllotteeController extends Controller
         return redirect('/');
     }
 
-    public function allotteeMain(Request $request)
+    public function allotteeMain(Request $request): Response
     {
         $allottee = Auth::guard('allottee')->user();
         $year = $request->input('year', session('selected_year', date('Y')));
         
-        $transactions = TransactionList::where('allottee_id', $allottee->id)
-            ->whereYear('transaction_posted_date', $year)
-            ->orderBy('transaction_posted_date')
-            ->get();
+        $transactions = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->orderBy('transaction_posted_date')->get();
+        
+        $lot_list = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->pluck('lot_id')->unique();
 
         return Inertia::render('Allottee/AllotteeIndex', [
             'allottee' => $allottee,
             'transactions' => $transactions,
-            'year' => $year
+            'year' => $year,
+            'lot_list' => $lot_list
         ]);
     }
 
-    public function allotteeStatement(Request $request): Response
+    public function allotteeStatement(Request $request): RedirectResponse
     {
 
         $year = $request->input('year', date('Y')); 
@@ -74,7 +74,8 @@ class AllotteeController extends Controller
 
         return redirect()->route('allottee.main')->with([
             'transactions' => $transactions,
-            'year' => $year
+            'year' => $year,
+            'lot_list' => $lot_list
         ]);
     }
 

@@ -42,10 +42,10 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                         </nav>
                         <main className="mt-6">
                             <section class="sm:bg-white md:bg-gray-50">
-                                <div class=" py-2 md:py-8 px-2 md:mx-auto md:max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
+                                <div class=" py-2 md:py-8 px-2 md:mx-auto md:max-w-screen-xl lg:py-16 grid lg:grid-cols-2 md:gap-16">
                                     <div class="flex flex-col justify-center">
                                         <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">Portal Laka</h1>
-                                        <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl">Selamat datang ke Portal Laka!<br/> Tempat untuk menyemak maklumat dan penyata transaksi bagi peserta RTK Paya Laka </p>
+                                        <p class="mb-6 text-lg hidden md:block font-normal text-gray-500 lg:text-xl">Selamat datang !<br/> Tempat untuk menyemak maklumat dan penyata transaksi bagi peserta RTK Paya Laka </p>
                                         {/* <a href="#" class="text-blue-600 hover:underline font-medium text-lg inline-flex items-center">Read more about our app 
                                             <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
@@ -53,7 +53,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                         </a> */}
                                     </div>
                                     <div>
-                                        <div class="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-white rounded-lg md:shadow-xl">
+                                        <div class="w-full lg:max-w-xl md:p-6 md:space-y-8 sm:p-8 md:bg-white rounded-2xl md:shadow-2xl">
                                             <h2 class="text-2xl font-bold text-gray-900">
                                                 Log Masuk Peserta
                                             </h2>
@@ -88,17 +88,17 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                                     <InputError message={errors.allottee_nric} className="mt-2" />
                                                 </div>
                                                 <div>
-                                                    <InputLabel htmlFor="password" value="Kata Laluan" />
-                                                    <div className=' p-2 bg-sky-200 rounded-lg text-sm text-gray-700 mb-2'>
+                                                    {/* <InputLabel htmlFor="password" value="Kata Laluan" /> */}
+                                                    <div className=' p-2 bg-sky-200 rounded-lg text-sm text-gray-700 mb-2 mt-4'>
                                                         Kata laluan adalah kombinasi <b>perkataan nama pertama (huruf besar)</b> dan <b>6 digit terakhir nombor kad pengenalan </b> anda.
-                                                        <br />Contoh
-                                                        <br /> Nama : <b>Siti</b> Zairah binti Ahmad
-                                                        <br /> No. K/P : 941301<b>065678</b>
+                                                        <br />Contoh : 
+                                                        <br /> Nama : <b className='underline'>Siti</b> Zairah binti Ahmad
+                                                        <br /> No. K/P : 941301<b className='underline'>065678</b>
                                                         <br />
                                                         <b>Kata Laluan : SITI065678</b>
 
                                                     </div>
-
+                                                    <InputLabel htmlFor="password" value="Kata Laluan" />
                                                     <TextInput
                                                         id="password"
                                                         type="password"
@@ -111,6 +111,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
                                                     <InputError message={errors.password} className="mt-2" />
                                                 </div>
+
+
+
                                                 <div className="mt-4 flex items-center justify-start">
                                                     {/* {canResetPassword && ( */}
 
@@ -125,6 +128,9 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                                     >
                                                         Forgot your password?
                                                     </Link> */}
+                                                </div>
+                                                <div className=' p-2 bg-sky-200 rounded-lg text-sm text-gray-700 mb-2 mt-4'>
+                                                    Sila hubungi PKPP Agro Sdn. Bhd. di talian 011-26637117 jika menghadapi masalah.
                                                 </div>
                                                 {/* <button type="submit" class="w-full px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto ">Login to your account</button> */}
                                                 {/* <div class="text-sm font-medium text-gray-900">
@@ -141,7 +147,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                             {auth.user ? (
                                 <Link
                                     href={route('dashboard')}
-                                    className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]"
+                                    className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] underline "
                                 >
                                     Dashboard
                                 </Link>
@@ -149,14 +155,14 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                 <>
                                     <Link
                                         href={route('login')}
-                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] hover:underline focus-visible:underline"
+                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] underline hover:underline focus-visible:underline"
                                     >
                                         Log Masuk Pentadbir Sistem
                                     </Link>
                                 </>
                             )}
                             
-                        | PKPP Agro Sdn Bhd © 2025 Hak Cipta Terpelihara
+                        <br/>PKPP Agro Sdn Bhd © 2025
                             {/* Laravel v{laravelVersion} (PHP v{phpVersion}) */}
                         </footer>
                     </div>

@@ -31,21 +31,20 @@ export default function Login({ status, canResetPassword }) {
                                 <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
                                     <div class="flex flex-col justify-center">
                                         <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">Portal Laka</h1>
-                                        <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl">Selamat datang ke Portal Laka! Tempat untuk menyemak maklumat dan penyata pembayaran bagi peserta RTK Paya Laka </p>
-                                        <a href="/#" class="text-blue-600 hover:underline font-medium text-lg inline-flex items-center">Anda Peserta / Pentadbir RTK Paya Laka?
+                                        <a href="/#" class="text-blue-600 hover:underline font-medium text-lg inline-flex items-center">Anda Peserta RTK Paya Laka?
                                             <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                                             </svg>
                                         </a>
                                     </div>
                                     <div>
-                                        <div class="w-full lg:max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow-xl">
+                                        <div class="w-full lg:max-w-xl p-6 space-y-8 sm:p-8 bg-amber-400 rounded-lg shadow-xl">
                                             <h2 class="text-2xl font-bold text-gray-900">
                                                 Log Masuk Pentadbir Sistem
                                             </h2>
                                             <form class="mt-8 space-y-6" action="#" onSubmit={submit}>
                                                 <div>
-                                                    <InputLabel htmlFor="email" value="Email" />
+                                                    <InputLabel htmlFor="email" className='text-gray-50' value="E-Mel" />
 
                                                     <TextInput
                                                         id="email"
@@ -61,7 +60,7 @@ export default function Login({ status, canResetPassword }) {
                                                     <InputError message={errors.email} className="mt-2" />
                                                 </div>
                                                 <div>
-                                                    <InputLabel htmlFor="password" value="Password" />
+                                                    <InputLabel htmlFor="password" className='text-gray-50' value="Kata Laluan" />
 
                                                     <TextInput
                                                         id="password"
@@ -74,23 +73,6 @@ export default function Login({ status, canResetPassword }) {
                                                     />
 
                                                     <InputError message={errors.password} className="mt-2" />
-                                                </div>
-                                                <div class="flex items-start">
-                                                    <div className="mt-4 block">
-                                                        <label className="flex items-center">
-                                                            <Checkbox
-                                                                name="remember"
-                                                                checked={data.remember}
-                                                                onChange={(e) =>
-                                                                    setData('remember', e.target.checked)
-                                                                }
-                                                            />
-                                                            <span className="ms-2 text-sm text-gray-600">
-                                                                Remember me
-                                                            </span>
-                                                        </label>
-                                                    </div>
-                                                    {/* <a href="#" class="ms-auto text-sm font-medium text-blue-600 hover:underline ">Lost Password?</a> */}
                                                 </div>
                                                 <div className="mt-4 flex items-center justify-end">
                                                     {canResetPassword && (

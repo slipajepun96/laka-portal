@@ -12,7 +12,7 @@ import {
     SelectValue,
 } from "@/Components/ui/select"
 
-export default function Dashboard({ allottee , transactions , year }) {
+export default function Dashboard({ allottee , transactions , year , lot_list }) {
 
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState(year || currentYear);
@@ -127,7 +127,8 @@ export default function Dashboard({ allottee , transactions , year }) {
                         ) : (
                             <AllotteeStatementView 
                                 transactions={transactions} 
-                                year={selectedYear} 
+                                year={selectedYear}
+                                lot_list={lot_list}
                             />
                         )}
                 </div>
