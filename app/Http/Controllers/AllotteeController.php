@@ -57,6 +57,8 @@ class AllotteeController extends Controller
         
         $lot_list = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->pluck('lot_id')->unique();
 
+        // dd($transactions);
+
         return Inertia::render('Allottee/AllotteeIndex', [
             'allottee' => $allottee,
             'transactions' => $transactions,
@@ -67,10 +69,10 @@ class AllotteeController extends Controller
 
     public function allotteeStatement(Request $request): RedirectResponse
     {
-
         $year = $request->input('year', date('Y')); 
         $allottee = Auth::guard('allottee')->user();
         $transactions = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->orderBy('transaction_posted_date')->get();
+
 
         return redirect()->route('allottee.main')->with([
             'transactions' => $transactions,

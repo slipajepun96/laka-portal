@@ -23,6 +23,8 @@ export default function Dashboard({ allottee , transactions , year , lot_list })
         transactions: transactions
     });
 
+    console.log(transactions);
+
     const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
         setLoading(true);

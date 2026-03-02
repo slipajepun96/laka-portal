@@ -22,7 +22,7 @@ export default function AllotteeStatementView({ transactions, year, lot_list }) 
 
     let num_of_lots = lot_list.length;
 
-
+    console.log(transactions);
 
     let balance = 0;
 
@@ -92,6 +92,7 @@ export default function AllotteeStatementView({ transactions, year, lot_list }) 
             </div>
         ),
     },
+   
 ];
 
     return (
@@ -100,9 +101,10 @@ export default function AllotteeStatementView({ transactions, year, lot_list }) 
             <p className='text-lg font-semibold'>Penyata Transaksi  {year} </p>
             
             {/* <StatementDataTable columns={columns} data={transactions} className="overflow-hidden " showSearch={false} /> */}
-            {num_of_lots > 1 && (
+            {/* {num_of_lots > 1 && ( */}
                 <StatementDataTable columns={columns} data={transactions} className="overflow-hidden " showSearch={false} />
-            )}
+            {/* )} */}
+
             <p className='text-sm text-gray-500 my-4'>
                 <b>Nota:</b> Penyata ini mungkin mengandungi kesilapan. Sekiranya terdapat sebarang kesilapan atau pertanyaan mengenai penyata ini, sila hubungi PKPP Agro Sdn. Bhd. di talian 011-26637117.
             </p>
