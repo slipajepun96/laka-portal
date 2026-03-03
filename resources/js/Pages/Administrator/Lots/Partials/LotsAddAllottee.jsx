@@ -35,7 +35,6 @@ export default function LotsAddAllottee({ allottees, lot }) {
         // lot_id: lot.id || '', 
         lot_id: '', 
         allottee_id: '',
-        ownership_type: '',
     });
 
     useEffect(() => {
@@ -60,14 +59,13 @@ export default function LotsAddAllottee({ allottees, lot }) {
 
     const submit = (e) => {
         e.preventDefault();
-        // console.log('onSuccess', data);
+        console.log('onSuccess', data);
 
         post(route('lots.add-allottee'), {
             onSuccess: () => {
                 reset(
                     'lot_id',
                     'allottee_id',
-                    'ownership_type',
                 );
                 // Close the dialog
                 console.log('onSuccess', data);

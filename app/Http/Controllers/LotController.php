@@ -113,24 +113,23 @@ class LotController extends Controller
 
     public function lotAddAllottee(Request $request): RedirectResponse
     {
-        // dd($request);
 
         $validatedData = $request->validate([
             'lot_id' => 'required',
             'allottee_id' => 'required',
-            'ownership_type' => 'required',
         ]);
+
+        // dd($validatedData);
 
         try {
             $ownership = new Ownership();
             $ownership->lot_id = $validatedData['lot_id'];
             $ownership->allottee_id = $validatedData['allottee_id'];
-            $ownership->ownership_type = $validatedData['ownership_type'];
             // $ownership->ownership_start_date = date("Y-m-d"); 
             $ownership->ownership_start_date = now(); 
             $ownership->save();
 
-            return redirect()->route('lots.index')->with('success', 'Pemilikan / Pentadbiran berjaya ditambah');
+            return redirect()->route('lots.index')->with('success', 'Pemilikan berjaya ditambah');
         } catch (\Exception $e) {
             // Handle any unexpected errors
             
