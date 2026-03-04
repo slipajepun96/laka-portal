@@ -47,7 +47,7 @@ class LotController extends Controller
     public function lotAdd(Request $request): RedirectResponse
     {
         $validatedData = $request->validate([
-            'lot_num' => 'required|numeric|max:9999',
+            'lot_num' => 'required|string',
             'lot_file_num' => 'nullable|string|max:255',
             'lot_description' => 'nullable|string|max:255',
             'lot_area_size' => 'nullable|numeric',
@@ -78,7 +78,7 @@ class LotController extends Controller
         try {
             $lot = Lot::findOrFail($id);
             $validatedData = $request->validate([
-                'lot_num' => 'required|numeric|max:9999',
+                'lot_num' => 'required|string',
                 'lot_file_num' => 'nullable|string|max:255',
                 'lot_description' => 'nullable|string|max:255',
                 'lot_area_size' => 'nullable|numeric',
