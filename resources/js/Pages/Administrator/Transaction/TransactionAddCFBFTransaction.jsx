@@ -2,6 +2,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
 // import TransactionAddTransaction from './Partials/TransactionAddTransaction';
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
@@ -35,8 +37,13 @@ export default function TransactionCFBFTransaction({ lots }) {
     const [shouldSubmit, setShouldSubmit] = useState(false);
     const [date, setDate] = useState();
     const [excludedLots, setExcludedLots] = useState(new Set());
+    const [abaiSwitches, setAbaiSwitches] = useState({});
+    const [masterAbai, setMasterAbai] = useState(false);
 
-    const totalAmount = Object.values(rowAmounts).map(Number).reduce((sum, val) => sum + (isNaN(val) ? 0 : val), 0);
+    const totalAmount = Object.entries(rowAmounts)
+        .filter(([lotId]) => !abaiSwitches[lotId])
+        .map(([, amount]) => Number(amount))
+        .reduce((sum, val) => sum + (isNaN(val) ? 0 : val), 0);
 
     // Filter out excluded lots
     const availableLots = lots.filter(lot => !excludedLots.has(lot.id));
@@ -84,12 +91,16 @@ export default function TransactionCFBFTransaction({ lots }) {
 
         console.log('Submitting form with data:', data);
 
+        // Filter out lots where abai switch is on
+        const activeTransactions = availableLots
+            .filter(lot => !abaiSwitches[lot.id])
+            .map(lot => ({
+                lot_id: lot.id,
+                allottee_id: lot.latest_allottee_id,
+                amount: parseFloat(rowAmounts[lot.id]) || "",
+            }));
 
-        const transactions = availableLots.map(lot => ({
-            lot_id: lot.id,
-            allottee_id: lot.latest_allottee_id,
-            amount: parseFloat(rowAmounts[lot.id]) || "",
-        }));
+        const transactions = activeTransactions;
 
 
         setData(prev => ({
@@ -109,22 +120,9 @@ export default function TransactionCFBFTransaction({ lots }) {
             accessor: 'latest_allottee_name',
             sortable: true,
             Cell: ({ row }) => (
-                <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                        {row.latest_allottee_name}
-                        <div className='text-sm'>{row.latest_allottee_nric}</div> 
-                    </div>
-                    <PrimaryButton
-                        type="button"
-                        onClick={() => removeLot(row.id)}
-                        className="ml-2 bg-red-600 hover:bg-red-800 focus:bg-red-500 focus:outline-none"
-                        title="Remove from list"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Buang
-                    </PrimaryButton>
+                <div className="flex flex-col space-x-2">
+                    {row.latest_allottee_name}
+                    <div className='text-sm'>{row.latest_allottee_nric}</div>
                 </div>
             ),
          },
@@ -139,9 +137,35 @@ export default function TransactionCFBFTransaction({ lots }) {
                     className="mt-1 block w-full"
                     // isFocused={true}
                     type="number"
+                    disabled={abaiSwitches[row.id]}
                     onChange={e => setRowAmounts(prev => ({ ...prev, [row.id]: e.target.value }))}
                     
                 />
+            ),
+        },
+        {
+            Header: 'Tindakan',
+            accessor: 'actions',
+            Cell: ({ row }) => (
+                <div className='flex gap-2'>
+                    <div className="flex items-center space-x-2">
+                        <Switch 
+                            id={`disable-row-${row.id}`} 
+                            checked={abaiSwitches[row.id] || false}
+                            onCheckedChange={(checked) => {
+                                setAbaiSwitches(prev => ({ ...prev, [row.id]: checked }));
+                            }}
+                        />
+                        <Label htmlFor={`disable-row-${row.id}`}>Abai</Label>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => removeLot(row.id)}
+                        className="px-3 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+                    >
+                        Buang
+                    </button>
+                </div>
             ),
         },
     ];
@@ -162,6 +186,21 @@ export default function TransactionCFBFTransaction({ lots }) {
                     </div>
                 <form onSubmit={submit}>
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2">
+                        <div className='mb-4 flex items-center space-x-2 p-3 bg-gray-50 rounded-md'>
+                            <Switch 
+                                id="master-abai"
+                                checked={masterAbai}
+                                onCheckedChange={(checked) => {
+                                    setMasterAbai(checked);
+                                    const newAbaiSwitches = {};
+                                    availableLots.forEach(lot => {
+                                        newAbaiSwitches[lot.id] = checked;
+                                    });
+                                    setAbaiSwitches(newAbaiSwitches);
+                                }}
+                            />
+                            <Label htmlFor="master-abai" className="font-semibold">Abai Semua</Label>
+                        </div>
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                             <div className='mb-2'>
                                 <InputLabel
@@ -248,7 +287,11 @@ export default function TransactionCFBFTransaction({ lots }) {
                     </div>
 
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2 mt-2">
-                        <DataTable columns={columns} data={availableLots} />
+                        <DataTable 
+                            columns={columns} 
+                            data={availableLots} 
+                            getRowClassName={(row) => abaiSwitches[row.id] ? 'bg-red-400 opacity-60' : ''}
+                        />
                     </div>
 
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2 my-2">
