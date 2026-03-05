@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function DataTable({ columns, data, className = "", showSearch = true }) {
+export default function DataTable({ columns, data, className = "", showSearch = true, getRowClassName = () => "" }) {
     const [search, setSearch] = useState('');
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
@@ -108,7 +108,7 @@ export default function DataTable({ columns, data, className = "", showSearch = 
                     </thead>
                     <tbody>
                         {sortedData.map((row, rowIndex) => (
-                            <tr key={rowIndex} className="hover:bg-gray-50">
+                            <tr key={rowIndex} className={`hover:bg-gray-50 ${getRowClassName(row)}`}>
                                 {columns.map((column) => (
                                     <td
                                         key={column.accessor || column.Header}

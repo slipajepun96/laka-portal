@@ -2,14 +2,16 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import DataTable from '@/Components/DataTable';
 // import TransactionAddTransaction from './Partials/TransactionAddTransaction';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu"
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/Components/ui/dropdown-menu"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
@@ -43,12 +45,15 @@ export default function TransactionAddBulkTransaction({ lots }) {
     const [rowAmounts, setRowAmounts] = useState({});
     const [shouldSubmit, setShouldSubmit] = useState(false);
     const [filteredLots, setFilteredLots] = useState(lots);
+    const [abaiSwitches, setAbaiSwitches] = useState({});
+    const [masterAbai, setMasterAbai] = useState(false);
 
 
 
-    const totalAmount = Object.values(rowAmounts)
-    .map(Number)
-    .reduce((sum, val) => sum + (isNaN(val) ? 0 : val), 0);
+    const totalAmount = Object.entries(rowAmounts)
+        .filter(([lotId]) => !abaiSwitches[lotId])
+        .map(([, amount]) => Number(amount))
+        .reduce((sum, val) => sum + (isNaN(val) ? 0 : val), 0);
 
     // Add useEffect to handle the actual submission
     useEffect(() => {
@@ -83,11 +88,16 @@ export default function TransactionAddBulkTransaction({ lots }) {
 
         // console.log(filteredLots);
 
-        const transactions = filteredLots.map(lot => ({
-            lot_id: lot.id,
-            allottee_id: lot.latest_allottee_id,
-            amount: parseFloat(rowAmounts[lot.id]) || "",
-        }));
+        // Filter out lots where abai switch is on
+        const activeTransactions = filteredLots
+            .filter(lot => !abaiSwitches[lot.id])
+            .map(lot => ({
+                lot_id: lot.id,
+                allottee_id: lot.latest_allottee_id,
+                amount: parseFloat(rowAmounts[lot.id]) || "",
+            }));
+
+        const transactions = activeTransactions;
 
 
         setData(prev => ({
@@ -110,7 +120,6 @@ export default function TransactionAddBulkTransaction({ lots }) {
         });
     };
 
-    // yg lama
     const columns = [
         { Header: 'No. Lot', accessor: 'lot_num', sortable: true },
         {   Header: 'Nama Peserta/Pentadbir',
@@ -136,6 +145,7 @@ export default function TransactionAddBulkTransaction({ lots }) {
                     className="mt-1 block w-full"
                     // isFocused={true}
                     type="number"
+                    disabled={abaiSwitches[row.id]}
                     onChange={e => setRowAmounts(prev => ({ ...prev, [row.id]: e.target.value }))}
                     
                 />
@@ -145,13 +155,27 @@ export default function TransactionAddBulkTransaction({ lots }) {
             Header: 'Tindakan',
             accessor: 'actions',
             Cell: ({ row }) => (
-                <button
-                    type="button"
-                    onClick={() => handleRemoveRow(row.id)}
-                    className="px-3 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
-                >
-                    Buang
-                </button>
+                <div className='flex gap-2'>
+                    <div className="flex items-center space-x-2">
+                        <Switch 
+                            id={`disable-row-${row.id}`} 
+                            checked={abaiSwitches[row.id] || false}
+                            onCheckedChange={(checked) => {
+                                setAbaiSwitches(prev => ({ ...prev, [row.id]: checked }));
+                            }}
+                        />
+                        <Label htmlFor={`disable-row-${row.id}`}>Abai</Label>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => handleRemoveRow(row.id)}
+                        className="px-3 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+                    >
+                        Buang
+                    </button>
+                </div>
+
+                
             ),
         },
     ];
@@ -172,6 +196,21 @@ export default function TransactionAddBulkTransaction({ lots }) {
                     </div>
                 <form onSubmit={submit}>
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2">
+                        <div className='mb-4 flex items-center space-x-2 p-3 bg-gray-50 rounded-md'>
+                            <Switch 
+                                id="master-abai"
+                                checked={masterAbai}
+                                onCheckedChange={(checked) => {
+                                    setMasterAbai(checked);
+                                    const newAbaiSwitches = {};
+                                    filteredLots.forEach(lot => {
+                                        newAbaiSwitches[lot.id] = checked;
+                                    });
+                                    setAbaiSwitches(newAbaiSwitches);
+                                }}
+                            />
+                            <Label htmlFor="master-abai" className="font-semibold">Abai Semua</Label>
+                        </div>
                         <div className='mb-2'>
                             <InputLabel
                                 htmlFor="transaction_name"
@@ -293,7 +332,11 @@ export default function TransactionAddBulkTransaction({ lots }) {
                     </div>
 
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2 mt-2">
-                        <DataTable columns={columns} data={filteredLots} />
+                        <DataTable 
+                            columns={columns} 
+                            data={filteredLots} 
+                            getRowClassName={(row) => abaiSwitches[row.id] ? 'bg-red-400 opacity-60' : ''}
+                        />
                     </div>
 
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2 my-2">

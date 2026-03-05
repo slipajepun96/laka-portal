@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Redirect;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 
+
 ini_set('max_execution_time', 300); // 5 minutes
 ini_set('memory_limit', '512M');
 
