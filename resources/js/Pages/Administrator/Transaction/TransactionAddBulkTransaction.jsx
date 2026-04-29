@@ -166,13 +166,14 @@ export default function TransactionAddBulkTransaction({ lots }) {
                         />
                         <Label htmlFor={`disable-row-${row.id}`}>Abai</Label>
                     </div>
-                    <button
+                    {/* <button
                         type="button"
                         onClick={() => handleRemoveRow(row.id)}
                         className="px-3 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+                        disabled={abaiSwitches[row.id]}
                     >
                         Buang
-                    </button>
+                    </button> */}
                 </div>
 
                 

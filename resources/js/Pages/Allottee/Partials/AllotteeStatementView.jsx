@@ -20,6 +20,16 @@ export default function AllotteeStatementView({ transactions, year, lot_list }) 
         year: year || currentYear,
     });
 
+const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const months = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+};
+
     let num_of_lots = lot_list.length;
 
     console.log(transactions);
@@ -46,33 +56,50 @@ export default function AllotteeStatementView({ transactions, year, lot_list }) 
                             {row.transaction_name}
                         </div>
                         <div className="font-medium text-sm text-gray-600">
-                            {row.transaction_posted_date}
+                            {formatDate(row.transaction_posted_date)}
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-4 text-md">
-                            <div>
-                                <span className="text-gray-600">Debit: </span>
-                                {row.transaction_type === 'debit' || row.transaction_type === 'brought_forward' || row.transaction_type === 'carry_forward' ? (
-                                    <span className='text-green-500 md:text-lg font-black text-right'>
-                                        RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        })}
-                                    </span>
-                                ) : '-'}
-                            </div>
-                            <div>
-                                <span className="text-gray-600">Kredit: </span>
-                                {row.transaction_type === 'credit' ? (
-                                    <span className='text-red-500 md:text-lg font-bold text-right'>
-                                        RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        })}
-                                    </span>
-                                ) : '-'}
-                            </div>
-                        </div>
+                        
+                            {row.transaction_type === 'debit' || row.transaction_type === 'credit' ? (
+                                <>
+                                <div className="grid grid-cols-2 gap-4 text-md">
+                                    <div>
+                                        <span className="text-gray-600">Debit: </span>
+                                        {row.transaction_type === 'debit' ? (
+                                            <span className='text-green-500 md:text-lg font-black text-right'>
+                                                RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                })}
+                                            </span>
+                                        ) : '-'}
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-600">Kredit: </span>
+                                        {row.transaction_type === 'credit' ? (
+                                            <span className='text-red-500 md:text-lg font-bold text-right'>
+                                                RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                })}
+                                            </span>
+                                        ) : '-'}
+                                    </div>
+                                </div>
+                                </>
+                            ) : (
+                                <>
+                                    {row.transaction_type === 'brought_forward' || row.transaction_type === 'carry_forward' ? (
+                                        <span className='text-blue-500 md:text-lg font-black text-right'>
+                                            RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            })}
+                                        </span>
+                                    ) : '-'}
+                                </>
+                            )}
+                       
                     </div>
                     
                 </div>
