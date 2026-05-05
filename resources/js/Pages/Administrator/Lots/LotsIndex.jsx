@@ -5,6 +5,7 @@ import LotsAddLot from './Partials/LotsAddLot';
 import LotsEditLot from './Partials/LotsEditLot';
 import LotsViewOwnership from './Partials/LotsViewOwnership';
 import LotsAddAllottee from './Partials/LotsAddAllottee';
+import LotsViewCurrentAllotteeStatement from './Partials/LotsViewCurrentAllotteeStatement';
 
 import {
   DropdownMenu,
@@ -15,22 +16,23 @@ import {
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu"
 
-export default function LotsIndex({ lots, allottees }) {
+
+export default function LotsIndex({ lots, allottees, statement_years }) {
     // console.log(lots);
     const columns = [
         { Header: 'No. Lot', accessor: 'lot_num' },
         // { Header: 'No. Fail / Geran', accessor: 'lot_file_num' },
-        {
-            Header: 'No. Fail / Geran',
-            accessor: ['lot_file_num', 'lot_ownership_num'],
-            Cell: ({ row }) => (
-                <div className="flex flex-col space-x-2">
-                    {row.lot_file_num}
-                    <div className='text-sm'>{row.lot_ownership_num}</div> 
-                    {/* <div className='text-sm'>{row.id}</div>  */}
-                </div>
-            ),
-        },
+        // {
+        //     Header: 'No. Fail / Geran',
+        //     accessor: ['lot_file_num', 'lot_ownership_num'],
+        //     Cell: ({ row }) => (
+        //         <div className="flex flex-col space-x-2">
+        //             {row.lot_file_num}
+        //             <div className='text-sm'>{row.lot_ownership_num}</div> 
+        //             {/* <div className='text-sm'>{row.id}</div>  */}
+        //         </div>
+        //     ),
+        // },
         {   Header: 'Nama Peserta/Pentadbir',
             accessor: ['latest_allottee_name', 'latest_allottee_nric'],
             Cell: ({ row }) => (
@@ -41,12 +43,22 @@ export default function LotsIndex({ lots, allottees }) {
                 </div>
             ),
          },
+        {   
+            Header: 'Baki Terkini',
+            accessor: 'latest_balance',
+            Cell: ({ row }) => (
+                <div className="font-semibold text-right text-nowrap">
+                    RM {parseFloat(row.latest_balance || 0).toLocaleString('ms-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+            ),
+        },
         {
             Header: 'Tindakan',
             accessor: 'actions',
             Cell: ({ row }) => (
                 <div className="flex space-x-2">
                     {/* <div className='text-sm'>{row.id}</div>  */}
+                    <LotsViewCurrentAllotteeStatement lot={ row } allotteeName={row.latest_allottee_name} statement_years={statement_years} />
                     <LotsViewOwnership lot={ row }/>
                     <LotsEditLot lot={ row }/>
                     <LotsAddAllottee allottees={ allottees } lot={ row }/>

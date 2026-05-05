@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/transaction/save-cfbf', [TransactionController::class, 'transactionSaveCFBF'])->name('transaction.save-cfbf');
     Route::post('/transaction/delete', [TransactionController::class, 'transactionDelete'])->name('transaction.delete');
     Route::get('/transaction/view/{transaction}', [TransactionController::class, 'transactionView'])->name('transaction.view');
+    Route::get('/transaction/lot/{lot_id}', [TransactionController::class, 'transactionGetByLot'])->name('transaction.by-lot');
 });
 
 

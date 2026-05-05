@@ -233,6 +233,18 @@ class TransactionController extends Controller
 
     }
 
+    public function transactionGetByLot(Request $request, $lot_id)
+    {
+        $year = $request->input('year', date('Y'));
+
+        $transactions = TransactionList::where('lot_id', $lot_id)
+            ->whereYear('transaction_posted_date', $year)
+            ->orderBy('transaction_posted_date')
+            ->get();
+
+        return response()->json($transactions);
+    }
+
     public function transactionViewAddCFBF(): Response
     {
         $lots = Lot::with(['ownerships' => function($q) {

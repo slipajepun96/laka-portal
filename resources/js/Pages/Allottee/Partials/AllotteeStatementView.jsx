@@ -20,19 +20,17 @@ export default function AllotteeStatementView({ transactions, year, lot_list }) 
         year: year || currentYear,
     });
 
-const formatDate = (dateString) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    const months = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
-};
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        const months = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = months[date.getMonth()];
+        const year = date.getFullYear();
+        return `${day} ${month} ${year}`;
+    };
 
     let num_of_lots = lot_list.length;
-
-    console.log(transactions);
 
     let balance = 0;
 

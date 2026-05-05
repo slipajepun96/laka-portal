@@ -6,6 +6,8 @@ use Inertia\Response;
 use App\Models\Lot;
 use App\Models\Allottee;
 use App\Models\Ownership;
+use App\Models\Transaction;
+use App\Models\TransactionList;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\LotsImport;
 
@@ -30,6 +32,7 @@ class LotController extends Controller
             return $lot;
         });
 
+
         // Sort lots by lot_num
         $lots = $lots->sortBy('lot_num')->values();
 
@@ -37,10 +40,34 @@ class LotController extends Controller
 
         $allottees = Allottee::orderBy('allottee_name')->get()->toArray();
 
+        $statement_years = Transaction::selectRaw('YEAR(transaction_posted_date) as year')->groupBy('year')->orderByDesc('year')->pluck('year')->toArray();
+
+        //get latest balance for each allottee
+        $latest_transaction_year = $statement_years[0] ?? 0;
+        $balances = TransactionList::whereYear('transaction_posted_date', $latest_transaction_year)
+            ->selectRaw(
+                'allottee_id, SUM(CASE
+                    WHEN transaction_type IN ("debit", "brought_forward", "carry_forward") THEN transaction_amount
+                    WHEN transaction_type = "credit" THEN -transaction_amount
+                    ELSE 0
+                END) as balance'
+            )
+            ->groupBy('allottee_id')
+            ->pluck('balance', 'allottee_id');
+
+        $lots = $lots->map(function($lot) use ($balances) {
+            $latestOwnership = $lot->ownerships->first();
+            $allotteeId = $latestOwnership?->allottee?->id;
+            $lot->latest_balance = $allotteeId ? ($balances[$allotteeId] ?? 0) : 0;
+            return $lot;
+        });
+
+
         // dd($lots[2]);
         return Inertia::render('Administrator/Lots/LotsIndex',[
             'lots' => $lots,
             'allottees' => $allottees,
+            'statement_years' => $statement_years,
         ]);
     }
 
