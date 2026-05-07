@@ -20,19 +20,7 @@ import {
 export default function LotsIndex({ lots, allottees, statement_years }) {
     // console.log(lots);
     const columns = [
-        { Header: 'No. Lot', accessor: 'lot_num' },
-        // { Header: 'No. Fail / Geran', accessor: 'lot_file_num' },
-        // {
-        //     Header: 'No. Fail / Geran',
-        //     accessor: ['lot_file_num', 'lot_ownership_num'],
-        //     Cell: ({ row }) => (
-        //         <div className="flex flex-col space-x-2">
-        //             {row.lot_file_num}
-        //             <div className='text-sm'>{row.lot_ownership_num}</div> 
-        //             {/* <div className='text-sm'>{row.id}</div>  */}
-        //         </div>
-        //     ),
-        // },
+        { Header: 'No. Lot', accessor: 'lot_num', sortable: true },
         {   Header: 'Nama Peserta/Pentadbir',
             accessor: ['latest_allottee_name', 'latest_allottee_nric'],
             Cell: ({ row }) => (
@@ -42,7 +30,9 @@ export default function LotsIndex({ lots, allottees, statement_years }) {
                     {/* <div className='text-sm'>{row.id}</div>  */}
                 </div>
             ),
+            sortable: true
          },
+         
         {   
             Header: 'Baki Terkini',
             accessor: 'latest_balance',
@@ -51,6 +41,7 @@ export default function LotsIndex({ lots, allottees, statement_years }) {
                     RM {parseFloat(row.latest_balance || 0).toLocaleString('ms-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
             ),
+            sortable: true 
         },
         {
             Header: 'Tindakan',
