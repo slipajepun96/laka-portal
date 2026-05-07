@@ -21,8 +21,9 @@ export default function LotsIndex({ lots, allottees, statement_years }) {
     // console.log(lots);
     const columns = [
         { Header: 'No. Lot', accessor: 'lot_num', sortable: true },
-        {   Header: 'Nama Peserta/Pentadbir',
-            accessor: ['latest_allottee_name', 'latest_allottee_nric'],
+        {   
+            Header: 'Nama Peserta/Pentadbir',
+            accessor: ['latest_allottee_name'],
             Cell: ({ row }) => (
                 <div className="flex flex-col space-x-2">
                     {row.latest_allottee_name}
@@ -31,8 +32,7 @@ export default function LotsIndex({ lots, allottees, statement_years }) {
                 </div>
             ),
             sortable: true
-         },
-         
+        },
         {   
             Header: 'Baki Terkini',
             accessor: 'latest_balance',
