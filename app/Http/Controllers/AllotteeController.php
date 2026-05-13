@@ -6,6 +6,7 @@ use Inertia\Response;
 use App\Models\Lot;
 use App\Models\Allottee;
 use App\Models\TransactionList;
+use App\Models\Transaction;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -52,19 +53,22 @@ class AllotteeController extends Controller
     public function allotteeMain(Request $request): Response
     {
         $allottee = Auth::guard('allottee')->user();
-        $year = $request->input('year', session('selected_year', date('Y')));
-        
+
+        $statement_years = Transaction::selectRaw('YEAR(transaction_posted_date) as year')->groupBy('year')->orderByDesc('year')->pluck('year')->toArray();
+
+        $year = $request->input('year', $statement_years[0] ?? date('Y'));
+
         $transactions = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->orderBy('transaction_posted_date')->get();
         
         $lot_list = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->pluck('lot_id')->unique();
-
         // dd($transactions);
 
         return Inertia::render('Allottee/AllotteeIndex', [
             'allottee' => $allottee,
             'transactions' => $transactions,
-            'year' => $year,
-            'lot_list' => $lot_list
+            'lot_list' => $lot_list,
+            'statement_years' => $statement_years,
+            'year' => (int) $year,
         ]);
     }
 
@@ -75,10 +79,12 @@ class AllotteeController extends Controller
         $transactions = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->orderBy('transaction_posted_date')->get();
 
 
+
         return redirect()->route('allottee.main')->with([
             'transactions' => $transactions,
             'year' => $year,
-            'lot_list' => $lot_list
+            'lot_list' => $lot_list,
+            'statement_years' => $statement_years,
         ]);
     }
 

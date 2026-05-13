@@ -12,10 +12,10 @@ import {
     SelectValue,
 } from "@/Components/ui/select"
 
-export default function Dashboard({ allottee , transactions , year , lot_list }) {
+export default function Dashboard({ allottee , transactions , year , lot_list, statement_years = [] }) {
 
     const currentYear = new Date().getFullYear();
-    const [selectedYear, setSelectedYear] = useState(year || currentYear);
+    const [selectedYear, setSelectedYear] = useState(year || statement_years[0] || currentYear);
     const [loading, setLoading] = useState(false);
 
     const { data: PDFData, setData: setPDFData, post: postPDF } = useForm({
@@ -23,15 +23,13 @@ export default function Dashboard({ allottee , transactions , year , lot_list })
         transactions: transactions
     });
 
-    console.log(transactions);
-
     const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
         setLoading(true);
 
         router.reload({
             data: { year: newYear },
-            only: ['transactions'], // Only reload transactions prop
+            only: ['transactions', 'lot_list', 'year'],
             preserveScroll: true,
             onFinish: () => 
                 {
@@ -70,26 +68,18 @@ export default function Dashboard({ allottee , transactions , year , lot_list })
             <Head title="Dashboard" />
 
             <div className="flex flex-col justify-center gap-4 px-2 lg:px-8">
-                <div className="flex flex-col md:flex-row md:justify-between  bg-gray-900 p-4 rounded-lg shadow">
+                <div className="flex flex-row md:flex-row justify-between bg-gray-900 p-4 rounded-lg shadow">
                     <div>
                         <p className='font-bold text-white text-2xl'>{allottee.allottee_name}</p>
-                        <p className='text-gray-300 font-bold text-md'>No. Kad Pengenalan : {allottee.allottee_nric}</p>
+                        <p className='text-gray-300 font-bold text-md'>{allottee.allottee_nric}</p>
                     </div>
                     <div>
-                        {/* <form action="{route('allottee.logout')}" method="post">
-                            <PrimaryButton className='bg-red-500 hover:bg-red-600 text-white'>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                                </svg>
-                                Log Keluar
-                            </PrimaryButton>
-                        </form> */}
                         <Link href={route('allottee.logout')} method="post">
                             <PrimaryButton variant="outline" className="bg-red-700 hover:bg-red-800">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
                                     </svg>
-                                    Log Keluar
+                                    <span className="hidden md:block">Log Keluar</span>
                             </PrimaryButton>
                         </Link>
                     </div>
@@ -110,8 +100,9 @@ export default function Dashboard({ allottee , transactions , year , lot_list })
                                         id="year"
                                         name="year"
                                     >
-                                        <SelectItem value="2026">2026</SelectItem>
-                                        <SelectItem value="2025">2025</SelectItem>
+                                        {statement_years.map((yr) => (
+                                            <SelectItem key={yr} value={yr.toString()}>{yr}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>
