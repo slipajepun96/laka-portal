@@ -46,7 +46,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                     <div class="flex flex-col justify-center items-center">
                                         <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">Portal Laka</h1>
                                         <img id="background" class="mb-6 w-1/3 " src="welcome-img.png" alt="background image" onError={handleImageError} />
-                                        <p class="mb-6 text-lg hidden md:block font-normal text-gray-500 lg:text-xl">Selamat datang !<br/> Tempat untuk menyemak maklumat dan penyata transaksi bagi peserta RTK Paya Laka </p>
+                                        <p class="mb-6 text-lg hidden md:block font-normal text-gray-500 lg:text-xl">Selamat datang<br/> Semak penyata transaksi RTK Paya Laka di sini! </p>
                                         <div className='hidden md:block p-2 bg-lime-200 rounded-lg text-sm text-gray-700 mb-2 mt-4'>
                                             Sila hubungi PKPP Agro Sdn. Bhd. di talian 011-26637117 jika menghadapi masalah.
                                         </div>
@@ -104,7 +104,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
                                                     {/* )} */}
 
-                                                    <PrimaryButton className="" disabled={processing}>
+                                                    <PrimaryButton className="w-full flex items-center justify-center " disabled={processing}>
                                                         Log Masuk
                                                     </PrimaryButton>
                                                      {/* <Link
@@ -125,12 +125,12 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                             </section>
                         </main>
 
-                        <footer className="text-center text-sm text-black">
+                        <footer className="md:mt-4 text-center text-sm text-black flex flex-row justify-center items-center gap-2">
 
                             {auth.user ? (
                                 <Link
                                     href={route('dashboard')}
-                                    className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] underline "
+                                    className="rounded-md text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] underline "
                                 >
                                     Dashboard
                                 </Link>
@@ -138,14 +138,14 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                 <>
                                     <Link
                                         href={route('login')}
-                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] underline hover:underline focus-visible:underline"
+                                        className="rounded-md text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] underline hover:underline focus-visible:underline"
                                     >
                                         Log Masuk Pentadbir Sistem
                                     </Link>
                                 </>
                             )}
-                            
-                        <br/>PKPP Agro Sdn Bhd © 2025
+                            <p>|</p>
+                            <p>PKPP Agro Sdn Bhd © 2025</p>
                             {/* Laravel v{laravelVersion} (PHP v{phpVersion}) */}
                         </footer>
                     </div>
