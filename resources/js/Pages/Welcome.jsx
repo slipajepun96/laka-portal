@@ -67,7 +67,6 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                                         name="allottee_nric"
                                                         value={data.allottee_nric}
                                                         className="mt-1 block w-full"
-                                                        isFocused={true}
                                                         onChange={(e) => setData('allottee_nric', e.target.value)}
                                                     />
 
