@@ -59,8 +59,9 @@ class AllotteeController extends Controller
         $year = $request->input('year', $statement_years[0] ?? date('Y'));
 
         $transactions = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->orderBy('transaction_posted_date')->get();
-        
-        $lot_list = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->pluck('lot_id')->unique();
+
+        $lot_ids = TransactionList::where('allottee_id', $allottee->id)->whereYear('transaction_posted_date', $year)->pluck('lot_id')->unique();
+        $lot_list = Lot::whereIn('id', $lot_ids)->orderBy('lot_num')->get(['id', 'lot_num']);
         // dd($transactions);
 
         return Inertia::render('Allottee/AllotteeIndex', [

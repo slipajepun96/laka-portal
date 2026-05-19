@@ -1,24 +1,6 @@
-import { useState, useEffect } from 'react';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { useForm } from '@inertiajs/react';
 import StatementDataTable from '@/Components/StatementDataTable';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/Components/ui/select"
 
 export default function AllotteeStatementView({ transactions, year, lot_list }) {
-    const d = new Date();
-    let currentYear = d.getFullYear();
-    const { data, setData, post, processing, errors, reset } = useForm({
-        year: year || currentYear,
-    });
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
@@ -26,109 +8,85 @@ export default function AllotteeStatementView({ transactions, year, lot_list }) 
         const months = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
         const day = String(date.getDate()).padStart(2, '0');
         const month = months[date.getMonth()];
-        const year = date.getFullYear();
-        return `${day} ${month} ${year}`;
+        const yr = date.getFullYear();
+        return `${day} ${month} ${yr}`;
     };
 
-    let num_of_lots = lot_list.length;
-
-    let balance = 0;
+    const getTransactionsWithBalance = (txs) => {
+        let runningBalance = 0;
+        return txs.map(tx => {
+            if (tx.transaction_type === 'debit' || tx.transaction_type === 'brought_forward' || tx.transaction_type === 'carry_forward') {
+                runningBalance += parseFloat(tx.transaction_amount || 0);
+            } else if (tx.transaction_type === 'credit') {
+                runningBalance -= parseFloat(tx.transaction_amount || 0);
+            }
+            return { ...tx, running_balance: runningBalance };
+        });
+    };
 
     const columns = [
-    {
-        Header: 'Transaksi',
-        accessor: 'transaction_name',
-        Cell: ({ row }) => {
-            
-            if (row.transaction_type === 'debit') {
-                balance += parseFloat(row.transaction_amount || 0);
-            } else if (row.transaction_type === 'brought_forward' || row.transaction_type === 'carry_forward') {
-                balance += parseFloat(row.transaction_amount || 0);
-            } else if (row.transaction_type === 'credit') {
-                balance -= parseFloat(row.transaction_amount || 0);
-            }
-            return (
-                <div className="">
-                    <div>
-                        <div className="font-semibold text-gray-800">
-                            {row.transaction_name}
+        {
+            Header: 'Transaksi',
+            accessor: 'transaction_name',
+            Cell: ({ row }) => (
+                <div>
+                    <div className="font-semibold text-gray-800">{row.transaction_name}</div>
+                    <div className="font-medium text-sm text-gray-600">{formatDate(row.transaction_posted_date)}</div>
+                    {row.transaction_type === 'debit' || row.transaction_type === 'credit' ? (
+                        <div className="grid grid-cols-2 gap-4 text-md">
+                            <div>
+                                <span className="text-gray-600">Debit: </span>
+                                {row.transaction_type === 'debit' ? (
+                                    <span className='text-green-500 md:text-lg font-black'>
+                                        RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </span>
+                                ) : '-'}
+                            </div>
+                            <div>
+                                <span className="text-gray-600">Kredit: </span>
+                                {row.transaction_type === 'credit' ? (
+                                    <span className='text-red-500 md:text-lg font-bold'>
+                                        RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </span>
+                                ) : '-'}
+                            </div>
                         </div>
-                        <div className="font-medium text-sm text-gray-600">
-                            {formatDate(row.transaction_posted_date)}
-                        </div>
-                        
-                        
-                            {row.transaction_type === 'debit' || row.transaction_type === 'credit' ? (
-                                <>
-                                <div className="grid grid-cols-2 gap-4 text-md">
-                                    <div>
-                                        <span className="text-gray-600">Debit: </span>
-                                        {row.transaction_type === 'debit' ? (
-                                            <span className='text-green-500 md:text-lg font-black text-right'>
-                                                RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                })}
-                                            </span>
-                                        ) : '-'}
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-600">Kredit: </span>
-                                        {row.transaction_type === 'credit' ? (
-                                            <span className='text-red-500 md:text-lg font-bold text-right'>
-                                                RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                })}
-                                            </span>
-                                        ) : '-'}
-                                    </div>
-                                </div>
-                                </>
-                            ) : (
-                                <>
-                                    {row.transaction_type === 'brought_forward' || row.transaction_type === 'carry_forward' ? (
-                                        <span className='text-blue-500 md:text-lg font-black text-right'>
-                                            RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            })}
-                                        </span>
-                                    ) : '-'}
-                                </>
-                            )}
-                       
-                    </div>
-                    
+                    ) : (
+                        row.transaction_type === 'brought_forward' || row.transaction_type === 'carry_forward' ? (
+                            <span className='text-blue-500 md:text-lg font-black'>
+                                RM {parseFloat(row.transaction_amount || 0).toLocaleString('ms-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </span>
+                        ) : '-'
+                    )}
                 </div>
-            );
+            ),
         },
-    },
-    {
-        Header: 'Baki (RM)',
-        accessor: 'transaction_amount',
-        Cell: ({ row }) => (
-            <div className="text-sm md:text-lg font-bold text-right text-nowrap">
-                {parseFloat(balance || 0).toLocaleString('ms-MY', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                })}
-                {/* {balance} */}
-            </div>
-        ),
-    },
-   
-];
+        {
+            Header: 'Baki (RM)',
+            accessor: 'running_balance',
+            Cell: ({ row }) => (
+                <div className="text-sm md:text-lg font-bold text-right text-nowrap">
+                    {parseFloat(row.running_balance || 0).toLocaleString('ms-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+            ),
+        },
+    ];
 
     return (
         <div className='w-full max-w-7xl'>
+            <p className='text-lg font-semibold'>Penyata Transaksi {year}</p>
 
-            <p className='text-lg font-semibold'>Penyata Transaksi  {year} </p>
-            
-            {/* <StatementDataTable columns={columns} data={transactions} className="overflow-hidden " showSearch={false} /> */}
-            {/* {num_of_lots > 1 && ( */}
-                <StatementDataTable columns={columns} data={transactions} className="overflow-hidden " showSearch={false} />
-            {/* )} */}
+            {lot_list.map((lot) => {
+                const lotTransactions = getTransactionsWithBalance(
+                    transactions.filter(tx => tx.lot_id === lot.id)
+                );
+                return (
+                    <div key={lot.id} className="mb-6">
+                        <p className="font-semibold text-gray-700 mt-4 mb-1 px-1">Lot {lot.lot_num}</p>
+                        <StatementDataTable columns={columns} data={lotTransactions} className="overflow-hidden" showSearch={false} />
+                    </div>
+                );
+            })}
 
             <p className='text-sm text-gray-500 my-4'>
                 <b>Nota:</b> Penyata ini mungkin mengandungi kesilapan. Sekiranya terdapat sebarang kesilapan atau pertanyaan mengenai penyata ini, sila hubungi PKPP Agro Sdn. Bhd. di talian 011-26637117.
