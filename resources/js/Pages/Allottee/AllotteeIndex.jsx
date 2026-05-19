@@ -11,6 +11,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select"
+import { Phone } from 'lucide-react';
 
 export default function Dashboard({ allottee , transactions , year , lot_list, statement_years = [] }) {
 
@@ -86,6 +87,8 @@ export default function Dashboard({ allottee , transactions , year , lot_list, s
 
                 </div>
                 <div className=" max-w-7xl">
+                    {allottee.allottee_statement_status ==='normal' ? (
+                        <>
                         <div className='flex flex-row w-full gap-2'>
                             <div className='flex-shrink-0'>
                                 <Select
@@ -123,7 +126,14 @@ export default function Dashboard({ allottee , transactions , year , lot_list, s
                                 year={selectedYear}
                                 lot_list={lot_list}
                             />
-                        )}
+                        )}</>
+                    ) : (
+                        <div className="p-4 bg-amber-200 rounded-xl gap-2 flex flex-col text-center">
+                            <p className='text-lg font-bold'>Penyata Anda Tidak Tersedia</p>
+                            <p>Harap maaf, penyata anda tidak tersedia untuk dipaparkan pada masa ini.</p>
+                            <p>Sekiranya anda ingin mengetahui dengan lebih lanjut, sila hubungi kami di <br /><a href="tel:+601126637117" className='underline'>011-2663 7117</a>.</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </AllotteeLayout>
