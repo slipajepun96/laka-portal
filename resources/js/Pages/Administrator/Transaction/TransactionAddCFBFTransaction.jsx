@@ -22,6 +22,14 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/Components/ui/popover
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { constructFromSymbol } from 'date-fns/constants';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/Components/ui/dialog";
+import axios from 'axios';
 
 export default function TransactionCFBFTransaction({ lots }) {
     // console.log(lots);
@@ -39,6 +47,9 @@ export default function TransactionCFBFTransaction({ lots }) {
     const [excludedLots, setExcludedLots] = useState(new Set());
     const [abaiSwitches, setAbaiSwitches] = useState({});
     const [masterAbai, setMasterAbai] = useState(false);
+    const [calcDialogOpen, setCalcDialogOpen] = useState(false);
+    const [calcYear, setCalcYear] = useState('');
+    const [calcLoading, setCalcLoading] = useState(false);
 
     const totalAmount = Object.entries(rowAmounts)
         .filter(([lotId]) => !abaiSwitches[lotId])
@@ -114,6 +125,32 @@ export default function TransactionCFBFTransaction({ lots }) {
         setShouldSubmit(true);
     };
 
+    const handleCalculate = async (e) => {
+        e.preventDefault();
+        setCalcLoading(true);
+        try {
+            const response = await axios.get('/transaction/balance-by-year', { params: { year: calcYear } });
+            const balances = response.data;
+            const newAmounts = {};
+            lots.forEach(lot => {
+                if (balances[lot.id] !== undefined) {
+                    newAmounts[lot.id] = parseFloat(balances[lot.id]).toFixed(2);
+                }
+            });
+            setRowAmounts(newAmounts);
+            setData(prev => ({
+                ...prev,
+                cf_year: String(calcYear),
+                bf_year: String(parseInt(calcYear) + 1),
+            }));
+            setCalcDialogOpen(false);
+        } catch (err) {
+            console.error('Failed to calculate balances', err);
+        } finally {
+            setCalcLoading(false);
+        }
+    };
+
     const columns = [
         { Header: 'No. Lot', accessor: 'lot_num', sortable: true },
         {   Header: 'Nama Peserta/Pentadbir',
@@ -184,6 +221,9 @@ export default function TransactionCFBFTransaction({ lots }) {
             <div className="py-2">
                 <div className="mx-auto max-w-7xl sm:px-2 lg:px-2">
                     <div className='mb-4 gap-2 flex '>
+                        <PrimaryButton type="button" onClick={() => setCalcDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+                            Kira Automatik CF/BF
+                        </PrimaryButton>
                     </div>
                 <form onSubmit={submit}>
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg p-2">
@@ -311,6 +351,35 @@ export default function TransactionCFBFTransaction({ lots }) {
                     
                 </div>
 
+            <Dialog open={calcDialogOpen} onOpenChange={setCalcDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Kira Baki Automatik</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleCalculate}>
+                        <div className="py-4">
+                            <InputLabel htmlFor="calc_year" value="Kira baki akhir tahun" />
+                            <TextInput
+                                id="calc_year"
+                                type="number"
+                                value={calcYear}
+                                className="mt-1 block w-full"
+                                placeholder="cth: 2024"
+                                onChange={e => setCalcYear(e.target.value)}
+                                required
+                            />
+                            <p className="text-sm text-gray-500 mt-2">
+                                Sistem akan mengira baki akhir tahun yang dipilih bagi setiap lot dan mengisi amaun secara automatik.
+                            </p>
+                        </div>
+                        <DialogFooter>
+                            <PrimaryButton type="submit" disabled={calcLoading}>
+                                {calcLoading ? 'Mengira...' : 'Kira & Isi'}
+                            </PrimaryButton>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </AuthenticatedLayout>
     );
 }

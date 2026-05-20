@@ -41,12 +41,12 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
                         </nav>
                         <main className="mt-4">
-                            <section class="sm:bg-white md:bg-gray-50">
-                                <div class=" py-2 md:py-4 px-2 md:mx-auto md:max-w-screen-xl lg:py-4 grid lg:grid-cols-2 md:gap-16">
-                                    <div class="flex flex-col justify-center items-center">
-                                        <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">Portal Laka</h1>
-                                        <img id="background" class="mb-6 w-1/3 " src="welcome-img.png" alt="background image" onError={handleImageError} />
-                                        <p class="mb-6 text-lg hidden md:block font-normal text-gray-500 lg:text-xl">Selamat datang<br/> Semak penyata transaksi RTK Paya Laka di sini! </p>
+                            <section className="bg-gray-50">
+                                <div className=" py-2 md:py-4 px-2 md:mx-auto md:max-w-screen-xl lg:py-4 grid lg:grid-cols-2 md:gap-16">
+                                    <div className="flex flex-col justify-center items-center">
+                                        <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">Portal Laka</h1>
+                                        <img id="background" className="mb-6 w-1/3 " src="welcome-img.png" alt="background image" onError={handleImageError} />
+                                        <p className="mb-6 text-lg hidden md:block font-normal text-gray-500 lg:text-xl">Selamat datang<br/> Semak penyata transaksi RTK Paya Laka di sini! </p>
                                         <div className='hidden md:block p-2 bg-lime-200 rounded-lg text-sm text-gray-700 mb-2 mt-4'>
                                             Sila hubungi PKPP Agro Sdn. Bhd. di talian 011-26637117 jika menghadapi masalah.
                                         </div>

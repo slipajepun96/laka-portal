@@ -177,7 +177,7 @@ class TransactionController extends Controller
             $transaction = Transaction::findOrFail($transactionId);
 
             $transaction_lists = TransactionList::where('transaction_id', $transactionId)
-                ->with(['allottee', 'lot']) // Load relationships
+                ->with(['allottee', 'lot'])
                 ->get()
                 ->map(function($item) {
                     return [
@@ -243,6 +243,25 @@ class TransactionController extends Controller
             ->get();
 
         return response()->json($transactions);
+    }
+
+    public function transactionGetBalanceByYear(Request $request)
+    {
+        $validated = $request->validate(['year' => 'required|integer']);
+        $year = $validated['year'];
+
+        $balances = TransactionList::whereYear('transaction_posted_date', $year)
+            ->selectRaw(
+                'lot_id, SUM(CASE
+                    WHEN transaction_type IN ("debit", "brought_forward", "carry_forward") THEN transaction_amount
+                    WHEN transaction_type = "credit" THEN -transaction_amount
+                    ELSE 0
+                END) as balance'
+            )
+            ->groupBy('lot_id')
+            ->pluck('balance', 'lot_id');
+
+        return response()->json($balances);
     }
 
     public function transactionViewAddCFBF(): Response
