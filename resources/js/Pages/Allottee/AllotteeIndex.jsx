@@ -62,11 +62,11 @@ export default function Dashboard({ allottee , transactions , year , lot_list, s
         <AllotteeLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
+                    Penyata Transaksi
                 </h2>
             }
         >
-            <Head title="Dashboard" />
+            <Head title="Penyata Transaksi" />
 
             <div className="flex flex-col justify-center gap-4 px-2 lg:px-8">
                 <div className="flex flex-row md:flex-row justify-between bg-gray-900 p-4 rounded-lg shadow">

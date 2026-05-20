@@ -15,7 +15,7 @@ export default function AllotteeStatementView({ transactions, year, lot_list }) 
     const getTransactionsWithBalance = (txs) => {
         let runningBalance = 0;
         return txs.map(tx => {
-            if (tx.transaction_type === 'debit' || tx.transaction_type === 'brought_forward' || tx.transaction_type === 'carry_forward') {
+            if (tx.transaction_type === 'debit' || tx.transaction_type === 'brought_forward') {
                 runningBalance += parseFloat(tx.transaction_amount || 0);
             } else if (tx.transaction_type === 'credit') {
                 runningBalance -= parseFloat(tx.transaction_amount || 0);

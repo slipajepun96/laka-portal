@@ -93,7 +93,7 @@ export default function StatementDataTable({ columns, data, className = "", show
                                 RM {(() => {
                                     let balance = 0;
                                     filteredData.forEach(row => {
-                                        if (row.transaction_type === 'debit' || row.transaction_type === 'brought_forward' || row.transaction_type === 'carry_forward') {
+                                        if (row.transaction_type === 'debit' || row.transaction_type === 'brought_forward') {
                                             balance += parseFloat(row.transaction_amount || 0);
                                         } else if (row.transaction_type === 'credit') {
                                             balance -= parseFloat(row.transaction_amount || 0);
